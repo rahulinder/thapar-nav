@@ -1,0 +1,245 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  padding: 0;
+  background-color: #ddeeff;
+  font-family: Google Sans Flex;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+/* ____________________________________________________________ */
+#top-bar {
+    background-color: #0d1117;
+    height: 88px;
+    width: 100%;
+    padding: 16px 16px;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+#search-bar {
+    width: 40%;
+    border-radius: 100vw;
+    height: 48px;
+    border: none;
+    padding: 0 16px;
+    margin: 0 20px;
+    font-family: Google Sans Flex;
+    font-size: 16px;
+}
+#top-bar-credentials {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    position: relative;
+    margin-left: auto;
+}
+#top-bar-pp {
+    display: inline-block;
+    width: 56px;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    object-fit: cover;
+    border-radius: 16px;
+    align-self: center;
+}
+#side-bar-logo {
+  width: 72px;
+  height: auto;
+  margin: 16px 0;
+}
+#top-bar-details {
+    display: inline-block;
+    color: white;
+}
+
+/* ____________________________________________________________ */
+#main-dashboard {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 8px 8px;
+    column-gap: 8px;
+}
+/* ____________________________________________________________ */
+#side-bar {
+  background-color: #0d1117;
+  width: 88px;
+  min-width: fit-content;
+  height: calc(100vh - 104px);
+  min-height: fit-content; 
+  padding: 8px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 8px;
+  box-sizing: border-box;
+  margin: 0;
+  border-radius: 24px;
+}
+.side-bar-icons {
+  border-radius: 16px;
+  max-width: 72px;
+  min-width: 72px;
+  max-height: 72px;
+  min-height: 72px;
+  padding: 20px;
+  transition: 200ms;
+}
+.side-bar-icons:not(#logout):hover {
+  background-color: #008152;
+  transition: 200ms;
+  cursor: pointer;
+}
+#settings-logout {
+  margin-top: auto;
+}
+#logout:hover {
+  background-color: #ca0000;
+}
+/* ____________________________________________________________ */
+#dashboard-2 {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    /* margin: 24px; */
+    width: 100%;
+    align-items: center;
+}
+#title {
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+#title img {
+    width: 0px;
+    height: 0px;
+    margin-bottom: 8px;
+    transition: 300ms;
+}
+#title h3 {
+  font-size: 32px;
+  font-weight: 500;
+  margin: 0;
+  margin-bottom: 8px;
+  padding: 8px 16px;
+}
+#title:hover img {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  transition: 300ms;
+}
+#title:hover {
+  cursor: pointer;
+}
+
+/* ____________________________________________________________ */
+
+#outer-card{
+  display: flex;
+  background-color: #0d1117;
+  color: black;
+  /* width: 100%; */
+  height: 100%;
+  width: fit-content;
+  /* height: fit-content; */
+  padding: 16px 4px 4px 4px;
+  border-radius: 24px;
+  column-gap: 4px;
+  transition: 300ms;
+}
+
+#outer-card #inner-card{
+  background-color: #f0f6fc;
+  width: 100%;
+  /* width:fit-content;
+  height: fit-content; */
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  padding: 16px;
+  column-gap: 24px;
+}
+
+#outer-card #inner-card #student-profile-image{
+  width: 256px;
+  height: 256px;
+  border-radius: 16px;
+}
+
+#student-details{
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  width: 100%;
+  /* min-width: fit-content; */
+  min-width: 1024px;
+  /* min-height: fit-content; */
+}
+
+#student-details h1{
+  margin: 0;
+  font-size: 40px;
+  font-weight: 500;
+}
+#name-and-edit-details{
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 32px;
+  height: fit-content;
+}
+#name-and-edit-details button{
+  margin-left: auto;
+}
+#student-details p{
+  margin: 0;
+  font-size: 18px;
+}
+.label p{
+  font-weight: 500;
+}
+table{
+  width: 100%;
+  border-spacing: 0 12px;
+}
+/* td{
+  border-bottom: 1px solid black;
+} */
+
+#edit{
+  padding: 4px 8px;
+  width: 88px;
+  min-width: 88px;  
+  height: 32px;
+  border: 2px solid black;
+  border-radius: 100vw;
+  background-color: transparent;
+  font-family: Google Sans Flex;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 100ms;
+}
+#edit:hover{
+  cursor: pointer;
+  background-color: #2775ea;
+  border-color: #2775ea;
+  color: white;  
+  transition: 100ms;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/Projects/Software Enginnering/Client/css/login.css">
+    <link rel="icon" type="image/svg" href="/Projects/Software Enginnering/assets/light-mode/side-bar/user.svg">
+</head>
+    <div id="parent-div">
+        <img #logo src="../assets/ti-logo-with-name.svg">
+        <section>
+            <input id="name" type="text" placeholder="Name">
+            <input id="phone_number" type="number" placeholder="Mobile Number">
+            <section id="droplist">
+                <!-- <label>I am a:</label> -->
+                <select>
+                    <option id="hidden-option" value="" disabled selected hidden>I am a</option>
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="visitor">Visitor</option>
+                </select>
+            </section>
+        </section>
+        <button>Continue</button>
+    </div>
+</body>
+</html>
