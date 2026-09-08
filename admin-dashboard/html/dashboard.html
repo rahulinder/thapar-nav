@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/admin-dashboard/css/dashboard.css">
+    <link rel="icon" type="image/svg" href="/assets/admin-panel/favicon/dashboard.svg">
+</head>
+<body>
+    <div id="top-bar">
+        <img id="top-bar-logo" src="/assets/common/ti-logo-without-name.svg">
+        <input id="search-bar" type="text" placeholder="Sitewide search">
+        <span id="top-bar-credentials">
+            <img id="top-bar-pp" src="/assets/admin-panel/photots/jeet.jpg">
+            <p id="top-bar-details">
+                Admin ID: 12345678
+                <br>
+                Admin Name: John Doe
+            </p>
+        </span>
+    </div>
+    <div id="main-dashboard">
+        <div id="side-bar">
+            <img class="side-bar-icons" src="/assets/admin-panel/side-bar/menu.svg">
+            <img class="side-bar-icons" src="/assets/admin-panel/side-bar/user.svg">
+            <img class="side-bar-icons" src="/assets/admin-panel/side-bar/driver.svg">
+            <img class="side-bar-icons" src="/assets/admin-panel/side-bar/database.svg">
+            <img class="side-bar-icons" src="/assets/admin-panel/side-bar/analytics.svg">
+            <img class="side-bar-icons" id="settings-logout" src="/assets/admin-panel/side-bar/settings.svg">
+            <img class="side-bar-icons" id="logout" src="/assets/admin-panel/side-bar/logout.svg">
+        </div>
+        <div id="dashboard-2">
+            <!-- Stats -->
+            <div id="stats">
+                    <span id="left-side-stat" class="stats-block">
+                        <p class="stats-right-border">Total Active Users</p>
+                        <p class="stats-left-border">128</p>
+                    </span>
+                    <span class="stats-block">
+                        <p class="stats-right-border">Active Rides</p>
+                        <p class="stats-left-border">8</p>
+                    </span>
+                    <span id="right-side-stat" class="stats-block">
+                        <p class="stats-right-border">Visitors in Campus</p>
+                        <p class="stats-left-border">15</p>
+                    </span>
+            </div>
+            
+            <!-- Pinned --> 
+            <div id="shortcuts">
+                <button class="pinned">
+                    Broadcast message
+                </button>
+                <button class="pinned">
+                    Alter Data
+                </button>
+                <button id="pin-more">
+                    Pin more +
+                </button>
+            </div>
+            <div id="quick-links">
+                <span>
+                    <h4>Manage Users</h4>
+                    <div id="users">
+                        <img src="/assets/admin-panel/dashboard/student-img.svg">
+                        <img src="/assets/admin-panel/dashboard/teacher-img.svg">
+                        <img src="/assets/admin-panel/dashboard/visitor-img.svg">
+                        <img src="/assets/admin-panel/dashboard/driver-img.svg">
+                    </div>            
+                </span>
+                <span>
+                    <h4>Manage Accommodations</h4> 
+                    <div id="accommodations">
+                        <img src="/assets/admin-panel/dashboard/BoysHostel.svg">
+                        <img src="/assets/admin-panel/dashboard/GirlsHostel.svg">
+                        <img src="/assets/admin-panel/dashboard/Faculty R.svg">
+                        <img src="/assets/admin-panel/dashboard/Guest Accommodation.svg">
+                    </div>            
+                </span>
+                <span>
+                    <h4>Manage Shops</h4>
+                    <div id="shops">
+                        <img src="/assets/admin-panel/dashboard/Shop.svg">
+                        <img src="/assets/admin-panel/dashboard/Cafe.svg">
+                        <img src="/assets/admin-panel/dashboard/Canteen.svg">
+                    </div>             
+                </span>
+            </div>
+        </div>
+    </div>
+    <div id="bottom-bar">
+        <p>Contact IT Department 8872800036</p>
+    </div>
+</body>
+</html>
