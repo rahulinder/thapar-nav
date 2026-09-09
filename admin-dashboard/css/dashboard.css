@@ -117,8 +117,12 @@ body {
 #settings-logout {
   margin-top: auto;
 }
-#logout:hover {
+#logout:hover{
   background-color: #ca0000;
+}
+#main-dashboard a img{
+  width: 100%;
+  height: 100%;
 }
 /* ____________________________________________________________ */
 #dashboard-2 {
