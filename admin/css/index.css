@@ -1,0 +1,107 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+html {
+    background-color: #f0f6fc;
+    font-family: "Google Sans Flex", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+#login-page {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+}
+#logo {
+    align-self: center;
+    max-width: 100%;
+}
+h2 {
+    align-self: center;
+    font-size: 32px;
+    margin: 24px 0 16px;
+    font-weight: 500;
+    color: black;
+}
+#login-form {
+    display: flex;
+    flex-direction: column;
+}
+.field-label {
+    font-size: 14px;
+    color: #0d1117;
+    margin: 12px 0 4px 4px;
+}
+.credentials {
+    width: 100%;
+    padding: 0 12px;
+    height: 44px;
+    font-family: inherit;
+    font-size: 16px;
+    color: black;
+    background: white;
+    border: 2px solid darkgray;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px 1px #0000003a;
+}
+.credentials:focus {
+    outline: none;
+    border-color: #014788;
+}
+.credentials:disabled {
+    opacity: 0.6;
+}
+#loginButt {
+    margin-top: 20px;
+    height: 44px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    background: #0d1117;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+#loginButt:hover {
+    background: #001636;
+}
+#loginButt:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+.login-error {
+    margin: 12px 4px 0;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #8a1111;
+    background: #ffe3e3;
+    border-radius: 12px;
+}
+.login-notice {
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #014788;
+    background: #dbf2ff;
+    border-radius: 12px;
+    text-align: center;
+}
+.login-help {
+    margin: 20px 4px 0;
+    font-size: 13px;
+    text-align: center;
+    color: #4b5563;
+}
+[hidden] {
+    display: none !important;
+}

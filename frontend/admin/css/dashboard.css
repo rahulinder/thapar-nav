@@ -1,0 +1,244 @@
+*{
+  box-sizing: border-box;
+  font-family: Google Sans Flex;
+}
+html{
+  background-color: #0d1117;
+  background-color: #dbf2ff;
+  margin: 0;
+  padding: 0;
+}
+body{
+  margin: 0;
+  padding: 0;
+}
+#dashboard-body {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start; /* Anchors both columns to the top */
+    width: 100%;
+}
+/* _____Main-Container__________________________________________ */
+#main-container{
+  display: inline-flex;
+  flex-direction: column;
+  row-gap: 4px;
+
+  margin: 8px 0;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px 8px 8px 8px;
+  
+  min-width: 1024px;
+  width: fit-content;
+  min-height: 512px;
+  height: fit-content;
+
+  background-color: #0d1117;
+  
+  border-radius: 24px;
+}
+/* _____Search-Bar__________________________________________ */
+#search-bar {
+  width: auto;
+  border-radius: 100vw;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  border: none;
+  padding: 0 16px;
+  margin: 0;
+  margin-bottom: 4px;
+  font-size: 16px;
+
+  flex: 1;
+}
+/* _____Stats__________________________________________ */
+
+#stats {
+  display: inline-flex;
+  column-gap: 4px;
+
+  color: black;
+  font-weight: 500;
+
+  width: auto;
+  max-height: 128px;
+
+  padding: 0;
+  margin: 0;
+}
+#stats span {
+  display: flex;
+  background-color: #f0f6fc;
+  flex-direction: row;
+  width: 100%;
+}
+#left-side-stat { 
+  border-radius: 20px 0 0 20px; 
+}
+#right-side-stat { 
+  border-radius: 0 20px 20px 0; 
+}
+.stats-block p {
+  margin: 8px 0;
+  width: 100%;
+  min-height: 96px;
+  align-content: center;
+  text-align: center;
+}
+.stats-left-border {
+  border-left: 1px solid black; 
+}
+.stats-right-border { 
+  border-right: 1px solid black; 
+}
+/* _____Pinned__________________________________________ */
+#pinned {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+}
+
+#shortcuts button {
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 16px;
+  height: 40px;
+  padding: 0 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+#shortcuts .pinned {
+  background-color: #ffca08;
+}
+
+#shortcuts #pin-more {
+  background-color: transparent;
+  border: 2px dashed gray;
+  color: gray;
+}
+/* _____Quick-Shortcuts__________________________________________ */
+#quick-links {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  border-radius: 24px;
+}
+#quick-links span {
+  background-color: #f0f6fc;
+  padding: 24px;
+}
+
+#quick-links span:nth-of-type(1) { border-radius: 20px 20px 0 0; }
+#quick-links span:nth-of-type(3) { border-radius: 0 0 20px 20px; }
+
+#quick-links h4 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid black;
+}
+
+#quick-links #users {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+}
+
+#quick-links #users button {
+  height: 104px;
+  width: 104px;
+  aspect-ratio: 1/1;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 24px;
+  transition: 160ms ease-in-out;
+  cursor: pointer;
+}
+
+#quick-links #users button:hover {
+  box-shadow: 2px 4px 4px 3px #00000065;
+}
+
+#quick-links #users button img {
+  height: 72px;
+  width: 72px;
+  aspect-ratio: 1/1;
+  margin-top: 8px;
+}
+
+#quick-links #users button p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 0 0 24px 24px;
+  width: 100%;
+  height: 40px;
+  padding: 4px 0;
+}
+
+#quick-links #users #quick-student { background-color: #E53030; }
+#quick-links #users #quick-student p { background-color: #F25E5E; }
+
+#quick-links #users #quick-teacher { background-color: #E62589; }
+#quick-links #users #quick-teacher p { background-color: #F268A8; }
+
+#quick-links #users #quick-visitor { background-color: #42B426; }
+#quick-links #users #quick-visitor p { background-color: #80ED8F; }
+
+#quick-links #accommodations, #quick-links #shops {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+}
+
+#quick-links #accommodations button, #quick-links #shops button {
+  height: 44px;
+  width: fit-content;
+  padding: 8px 16px;
+  color: white;
+  background-color: #0d1117;
+  border: none;
+  border-radius: 100vh;
+  font-size: 16px;
+  font-weight: 500;
+  display: inline-flex;
+  flex-direction: row;
+  column-gap: 4px;
+  justify-content: center;
+  align-items: center;
+  transition: 160ms;
+  cursor: pointer;
+}
+
+#quick-links #accommodations button:hover, #quick-links #shops button:hover {
+  background-color: #0071E3;
+  box-shadow: 0px 2px 4px 2px #00000065;
+}
+
+#quick-links #accommodations button img, #quick-links #shops button img {
+  height: 26px;
+}
+
+.main-title{
+  display: block;
+
+  color: white;
+  font-size: 24px;
+  font-weight: 500;
+
+  margin: 0;
+  margin-top: 16px;
+  padding: 0 16px;
+}

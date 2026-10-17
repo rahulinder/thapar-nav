@@ -1,0 +1,144 @@
+.intro {
+    margin: 0 8px 10px;
+    color: #c7d2e0;
+    font-size: 15px;
+}
+.intro.small {
+    font-size: 13px;
+}
+.intro b {
+    color: white;
+}
+.picker-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 0 4px 8px;
+}
+.file-button {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0d1117;
+    background: #78ffa7;
+    border-radius: 12px;
+    cursor: pointer;
+}
+#file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+#file-input:focus-visible + button,
+#file-input:focus-visible ~ .file-button,
+.file-button:focus-within {
+    outline: 3px solid #0071e3;
+}
+#file-name {
+    color: #c7d2e0;
+    font-size: 14px;
+}
+#summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 4px 10px;
+}
+.pill {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 999px;
+    color: #0d1117;
+    background: #e5e7eb;
+}
+.pill.ready {
+    background: #78ffa7;
+}
+.pill.exists {
+    background: #ffe29a;
+}
+.pill.error {
+    background: #ffb4b4;
+}
+#options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 8px 10px;
+}
+fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+}
+legend {
+    float: left;
+    margin-right: 16px;
+    padding: 0;
+    color: #c7d2e0;
+    font-size: 14px;
+}
+#table-wrap {
+    max-height: 520px;
+    overflow: auto;
+}
+#import-table {
+    min-width: 900px;
+}
+#import-table th {
+    position: sticky;
+    top: 0;
+    background: #f0f6fc;
+}
+#import-table td {
+    font-size: 14px;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+    background: #e5e7eb;
+}
+.badge.ready,
+.badge.created,
+.badge.updated {
+    background: #b9f6ce;
+}
+.badge.exists,
+.badge.skipped {
+    background: #ffe29a;
+}
+.badge.error,
+.badge.failed {
+    background: #ffb4b4;
+}
+.note {
+    color: #4b5563;
+    max-width: 320px;
+}
+#actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 4px 4px;
+}
+#done-link {
+    color: #78ffa7;
+    font-size: 15px;
+    margin-left: 8px;
+}

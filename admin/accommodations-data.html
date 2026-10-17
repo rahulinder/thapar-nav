@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Data</title>
+
+    <link rel="stylesheet" href="./css/accommodations-data.css">
+    <link rel="stylesheet" href="./css/top-bar.css">
+    <link rel="stylesheet" href="./css/side-bar.css">
+    <link rel="icon" type="image/svg" href="./assets/admin-panel/favicon/database.svg">
+</head>
+<body>
+    <div id="top-bar-container"></div>
+    <div id="dashboard-body">
+        <div id="sidebar-container"></div>
+        <div id="main-container">
+            <div class="outer-card">
+                <span id="title-container">
+                    <img id="title-arrow" src="./assets/admin-panel/campus-data/arrow-to-left-white.svg">
+                    <p id="title">Accommodations Data</p>
+                </span>
+                <section id="search-and-sort-container" class="inner-cards">
+                    <input id="search" type="text" placeholder="Search Accommodation">
+                    <section id="sort-container">
+                        <button class="sort-buttons">Hostels</button>                            
+                        <button class="sort-buttons">Faculty Residence</button>                            
+                        <button class="sort-buttons">Guest Accommodation</button>                            
+                    </section>
+                </section>
+                <!-- <div id="new-location-container" class="inner-cards">
+                    <p id="add-new-title">Add new: </p>
+                    <button class="add-new-buttons">Hostels</button>                            
+                    <button class="add-new-buttons">Faculty Residence</button>                            
+                    <button class="add-new-buttons">Guest Accommodation</button> 
+                </div> -->
+                <div id="new-location-container" class="inner-cards">
+                    <!-- Header with Buttons -->
+                    <div id="add-new-header">
+                        <p id="add-new-title">Add new: </p>
+                        <button class="add-new-buttons" data-category="Hostels">Hostels</button>                            
+                        <button class="add-new-buttons" data-category="Faculty Residence">Faculty Residence</button>                            
+                        <button class="add-new-buttons" data-category="Guest Accommodation">Guest Accommodation</button> 
+                    </div>
+
+                    <!-- Hidden Form that expands -->
+                    <form id="add-location-form">
+                        <input type="text" id="loc-title" placeholder="Location Title" required>
+                        <input type="text" id="loc-category" readonly placeholder="Category">
+                        <input type="text" id="loc-coordinates" placeholder="Lat, Long (e.g., 30.35, 76.36)" required>
+                        <button type="submit" id="save-location-btn">Save</button>
+                    </form>
+                </div>
+                <div id="table-container" class="inner-cards">
+                    <table id="table">
+                        <thead>
+                            <tr>
+                                <th id="first-col-header">Place ID</th>
+                                <th>Category</th>
+                                <th>Title</th>
+                                <th>Location Coordinates</th>
+                                <th id="last-col-header">Alter Data</th> <!-- New Column -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- JavaScript will inject dynamic rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/topbar-and-sidebar.js"></script>
+</body>
+</html>

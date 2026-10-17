@@ -1,0 +1,93 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+*{
+  font-family: Google Sans Flex;
+}
+html {
+  padding: 0;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+}
+body {
+  
+  background-image: url(/assets/common/doodle-light-1.svg);
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  
+  margin: 0;
+  padding: 0;
+  
+  max-width: 1024px;
+}
+
+#logo{
+  position: absolute;
+  top: 24vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 104px;
+  z-index: 1;
+}
+#doodle{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+}
+#credentials-card{
+  background-color: #0D1117;
+  height: 40%;
+  width: 100%;
+  max-width: 1024px;
+  
+  z-index: 2;
+  
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  padding: 24px;
+  margin: 0;
+
+  position: absolute;
+  bottom: 0;
+  
+  border-radius: 32px 32px 0 0;
+}
+#credentials-card input{
+  width: 100%;
+  height: 48px;
+  border-radius: 16px;
+  border: 1px solid gray;
+  padding: 8px;
+  
+  font-size: 18px;
+}
+button{
+  width: 100%;
+  height: 48px;
+  border-radius: 16px;
+  border: none;
+  
+  background-color: #cf0000;
+  font-size: 18px;
+  font-weight: 500;
+  color: white
+}
+#skip-btn{
+  background-color: transparent;
+  border: 4px solid #cf0000;
+  color: #cf0000;
+}
+#credentials-card span{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  margin: 0;
+}

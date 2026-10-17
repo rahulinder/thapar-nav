@@ -1,0 +1,134 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+* {
+    font-family: "Google Sans Flex", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+    padding: 0;
+    background-color: #f0f6fc;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 24px 48px;
+}
+
+#role-heading {
+    width: 100%;
+    max-width: 768px;
+    margin: 0 0 16px;
+    font-size: 28px;
+    font-weight: 500;
+    text-align: center;
+}
+
+#options {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    width: 100%;
+    max-width: 768px;
+    margin: 0;
+    padding: 0;
+}
+
+.role-option {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 104px;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    font-weight: 400;
+    color: #0d1117;
+    border-radius: 32px;
+    box-shadow: 0 3px 2px #00000051;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.role-option:hover {
+    transform: translateY(-2px);
+}
+
+.role-option[aria-current="true"] {
+    outline: 4px solid #0d1117;
+    outline-offset: 3px;
+}
+
+.role-option p {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.role-option span {
+    display: block;
+    height: 100%;
+    padding: 8px;
+}
+
+.role-option img {
+    display: block;
+    height: 100%;
+}
+
+#student {
+    background-color: #f25e5e;
+    border: 4px solid #e53030;
+}
+
+#teacher {
+    background-color: #f268a8;
+    border: 4px solid #e62589;
+}
+
+#visitor {
+    background-color: #80ed8f;
+    border: 4px solid #42b426;
+}
+
+#student span {
+    background-color: #e53030;
+    border-radius: 0 24px 24px 0;
+}
+
+#teacher span {
+    background-color: #e62589;
+    border-radius: 24px 0 0 24px;
+}
+
+#visitor span {
+    background-color: #42b426;
+    border-radius: 0 24px 24px 0;
+}
+
+:focus-visible {
+    outline: 4px solid #0071e3;
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .role-option {
+        transition: none;
+    }
+
+    .role-option:hover {
+        transform: none;
+    }
+}

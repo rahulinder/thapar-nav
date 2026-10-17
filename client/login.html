@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Thapar-Nav</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/common/ti-logo-without-name.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/login.css">
+
+    <script type="module" src="./js/login-page.js"></script>
+</head>
+<body>
+    <img id="logo" src="./assets/common/ti-logo-with-black-name.svg" alt="Thapar-Nav">
+    <form id="credentials-card">
+        <span>
+            <label for="visitor-name" class="visually-hidden">Your name</label>
+            <input id="visitor-name" type="text" placeholder="Name (optional)" maxlength="40" autocomplete="given-name">
+        </span>
+        <span>
+            <button type="submit">Continue</button>
+            <button type="button" id="skip-btn">Skip</button>
+        </span>
+    </form>
+</body>
+</html>

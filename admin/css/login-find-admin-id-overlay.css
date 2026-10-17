@@ -1,0 +1,76 @@
+html{
+    background-color: rgba(0, 0, 0, 0.329);
+    font-family: Google Sans Flex;
+}
+body{
+    margin: 0;
+    padding: 0;
+}
+h3{
+    font-weight: 500;
+    font-size: 24px
+}
+#outer-card{
+    background-color: #0D1117;
+    padding: 16px 4px 4px 4px;
+    border-radius: 32px;
+    width: 320px;
+    justify-self: center;
+    margin-top: 32vh;
+    justify-items: center;
+    box-sizing: content-box;
+}
+#inner-card{
+    margin: 0;
+    background-color: #f6f6f6;
+    width: 100%;
+    justify-items: center;
+    padding: 16px;
+    border-radius: 28px;
+    box-sizing:border-box;
+}
+input{
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 8px;
+    padding: 0 8px;
+    border: 1px solid gray;
+    font-family: Google Sans Flex;
+    font-size: 16px;
+    border-radius: 12px;
+}
+button{
+    color: white;
+    font-family: Google Sans Flex;
+    font-size: 16px;
+    width: 100%;
+    height: 40px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 12px;
+    background-color: none;
+}
+#findID{
+    background-color: #0D1117;
+}
+#cancel{
+    background-color: none;
+    border: 3px solid #ca0000;
+    color: #ca0000;
+}
+#findID:hover{
+    background-color: #282a2f;
+}
+#cancel:hover{
+    background-color: #ca0000;
+    color: white;
+    transition: 200ms;
+}
+button:hover{
+    cursor: pointer;
+}
+*, *::before, *::after {
+    box-sizing: border-box;
+}

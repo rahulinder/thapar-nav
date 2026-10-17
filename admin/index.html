@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="icon" type="image/svg+xml" href="./assets/common/ti-logo-without-name.svg">
+</head>
+<body>
+    <main id="login-page"> 
+        <img id="logo" alt="thapar-nav logo" src="./assets/common/ti-logo-with-black-name.svg">
+        <h2>Admin's Panel</h2>
+        <p id="login-notice" class="login-notice" role="status" hidden></p>
+        <form id="login-form" novalidate>
+            <label class="field-label" for="username">Username</label>
+            <input class="credentials" id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40" required>
+            <label class="field-label" for="password">Password</label>
+            <input class="credentials" id="password" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+            <p id="login-error" class="login-error" role="alert" hidden></p>
+            <button id="loginButt" type="submit">Login</button>
+        </form>
+        <p class="login-help">Forgot your password? Ask the person who runs the server to reset it.</p>
+    </main>
+    <script type="module" src="./js/login-page.js"></script>
+</body>
+</html>

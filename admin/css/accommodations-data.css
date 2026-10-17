@@ -1,0 +1,475 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: Google Sans Flex;
+}
+html {
+  padding: 0;
+  background-color: #dbf2ff;
+}
+body {
+  margin: 0;
+  padding: 0;
+}
+/* ____________________________________________________________ */
+#dashboard-body {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+  column-gap: 8px;
+}
+
+/* ____________________________________________________________ */
+#main-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  width: 100%;
+}
+/* ____________________________________________________________ */
+.outer-card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+  justify-content: center;
+  align-items: flex-start;
+
+
+  background-color: #0d1117;
+  
+  color: black;
+  width: 896px;
+  min-width: 512px;
+  height: fit-content;
+  
+  padding: 16px 8px 8px 8px;
+  margin: 8px auto;
+  
+  border-radius: 24px;
+
+  transition: 196ms ease-in-out;
+}
+/* ____________________________________________________________ */
+#title-container{
+  width: fit-content;
+  
+  display: flex;
+  flex-direction: row;
+  
+  transition: 200ms ease-in-out;
+}
+#title{
+  padding: 0 8px;
+  margin: 0;
+  margin-bottom: 8px;
+  
+  color: white;
+  font-size: 32px;
+  font-weight: 500;
+  
+  width: fit-content;
+  transition: 200ms ease-in-out;
+}
+#title-arrow{
+  width: 0px;
+  height: 40px;
+
+  transition: 200ms ease-in-out;
+}
+#title-container:hover{
+  cursor: pointer;
+
+  transition: 200ms ease-in-out;
+}
+#title-container:hover #title-arrow{
+  width: 40px;
+  height: 40px;
+
+  transition: 200ms ease-in-out;
+}
+/* ____________________________________________________________ */
+.inner-cards {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  
+  background-color: #f0f6fc;
+  
+  width: 100%;
+  min-height: fit-content;
+
+  
+  padding: 0 8px;
+  
+  border-radius: 0;
+  
+  transition: 196ms ease-in-out;
+}
+/* ____________________________________________________________ */
+#search-and-sort-container{
+  margin:0;
+  padding: 8px;
+
+  border: none;
+  border-radius: 16px 16px 0 0;
+
+  width: 100%;
+  height: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  flex-wrap: wrap;
+}
+#search{
+  width: 100%;
+  height: 48px;
+
+  border: 1px solid gray;
+  border-radius: 8px;
+
+  font-size: 16px;
+
+  margin: none;
+  padding: 8px;
+}
+.sort-buttons{
+  width: fit-content;
+  height: fit-content;
+
+  margin: 0;
+  padding: 8px;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: #0d1117;
+
+  color: white;
+  font-size: 16px;
+  transition: 0.2s ease;
+}
+.sort-buttons:hover {
+  cursor: pointer;
+  background-color: #2d2e30;
+  /* border-radius: 32px; */
+  transition: 0.2s ease;
+}
+.sort-buttons.active-sort {
+  background-color: #0071E3;
+  border-radius: 32px;
+  transition: background-color 0.2s ease;
+}
+#new-location-container {
+  display: flex;
+  flex-direction: column; /* Stacks the buttons above the form */
+  align-items: flex-start;
+  
+  padding: 8px;
+  margin:0;
+  margin-top: -2px;
+  margin-bottom: 4px;
+  
+  border-radius: 0 0 16px 16px;
+}
+#add-new-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  column-gap: 8px;
+}
+
+#add-location-form {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+  width: 100%;
+
+  
+  /* Animation Setup */
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+/* JavaScript toggles this class to reveal the inputs */
+#add-location-form.expanded {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 16px;
+}
+
+#add-location-form input{
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid gray;
+}
+#add-location-form button{
+  width: fit-content;
+  min-width: 88px;
+  height: 100%;
+  
+  font-size: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  
+  background-color: #0d1117;
+  color: white;
+  border: none;
+  
+  font-weight: 424;
+
+  transition: 200ms ease-in-out;
+}
+#add-location-form button:hover{
+  background-color: #0071E3;
+  cursor: pointer;
+  border-radius: 40px;
+  
+  border: none;
+  /* border-bottom: 2px solid #0d1117; */
+
+  transition: 200ms ease-in-out;
+}
+.map-link {
+    color: #0071E3;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.map-link:hover {
+    color: #0d1117;
+    text-decoration: underline;
+}
+/* --- Fixed Table Layout --- */
+#table-container {
+  padding: 16px;
+  border-radius: 16px;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse; /* Removes gap between borders */
+  text-align: left;
+  border-radius: 8px;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #cdd9e5; /* Clean row separators */
+}
+
+th {
+  background-color: #0d1117;
+  color: white;
+  font-weight: 500;
+}
+#first-col-header{
+  border-radius: 8px 0 0 8px;
+}
+#last-col-header{
+  border-radius: 0 8px 8px 0;
+}
+#add-new-title{
+  font-size: 18px;
+  font-weight: 500;
+}
+.add-new-buttons{
+  width: fit-content;
+  height: fit-content;
+
+  margin: 0;
+  padding: 8px;
+
+  border: 2px solid #0d1117;
+  border-radius: 8px;
+
+  background-color: transparent;
+
+  color: #0d1117;
+  font-size: 16px;
+  font-weight: 500;
+}
+.add-new-buttons:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+.add-new-buttons.active-category {
+  background-color: #0d1117;
+  color: white;
+  border-radius: 40px;
+  transition: background-color 0.2s ease;
+}
+#table-container{
+  padding: 8px;
+  border-radius: 16px;
+}
+.alter-data-cell {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.action-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.action-icon:hover {
+    opacity: 0.7;
+    transform: scale(1.1);
+}
+
+td {
+    vertical-align: middle;
+}
+
+.cell-input {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+
+    font-size: 16px;
+    color: #0d1117;
+
+    background-color: white;
+    border: 1px solid gray;
+    border-radius: 8px;
+}
+
+.cell-input:disabled {
+    background-color: transparent;
+    border-color: transparent;
+    color: #0d1117;
+    -webkit-text-fill-color: #0d1117;
+    opacity: 1;
+    cursor: default;
+    appearance: none;
+    -webkit-appearance: none;
+    text-overflow: ellipsis;
+}
+
+.cell-input:focus {
+    outline: none;
+    border-color: #0071E3;
+    box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.25);
+}
+
+.coordinates-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 8px;
+}
+
+.view-actions,
+.edit-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.view-actions {
+    column-gap: 24px;
+}
+
+.edit-actions {
+    display: none;
+    column-gap: 8px;
+}
+
+tr.editing {
+    background-color: #e1efff;
+}
+
+tr.editing .map-link {
+    display: none;
+}
+
+tr.editing .view-actions {
+    display: none;
+}
+
+tr.editing .edit-actions {
+    display: flex;
+}
+
+tr.deleting {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.row-btn {
+    padding: 6px 12px;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border: 2px solid #0d1117;
+    border-radius: 8px;
+
+    cursor: pointer;
+    transition: 200ms ease-in-out;
+}
+
+.save-btn {
+    background-color: #0d1117;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #0071E3;
+    border-color: #0071E3;
+}
+
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    color: #0d1117;
+}
+
+.cancel-btn:hover {
+    background-color: #0d1117;
+    color: white;
+}
+
+.table-message {
+    padding: 24px;
+    text-align: center;
+    color: #57606a;
+}
+
+.retry-btn {
+    margin-left: 8px;
+    padding: 6px 12px;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+
+    background-color: #0d1117;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.retry-btn:hover {
+    background-color: #0071E3;
+}
+/* ____________________________________________________________ */
+

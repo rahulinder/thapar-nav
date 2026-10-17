@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="./css/places-data.css">
+    <link rel="stylesheet" href="./css/top-bar.css">
+    <link rel="stylesheet" href="./css/side-bar.css">
+    <link rel="icon" type="image/svg+xml" href="./assets/admin-panel/favicon/database.svg">
+</head>
+<body hidden>
+    <div id="top-bar-container"></div>
+    <div id="dashboard-body">
+        <div id="sidebar-container"></div>
+        <div id="main-container">
+            <div class="outer-card">
+                <a id="title-container" href="./campus-data.html">
+                    <img id="title-arrow" alt="" src="./assets/admin-panel/campus-data/arrow-to-left-white.svg">
+                    <p id="title">Places</p>
+                </a>
+                <div id="toolbar">
+                    <input id="search-input" type="search" placeholder="Search places" aria-label="Search places" maxlength="80">
+                    <select id="category-filter" aria-label="Filter by category"></select>
+                    <button id="add-button" type="button" class="primary">Add place</button>
+                    <a id="import-link" href="./import-places.html">Import CSV</a>
+                </div>
+                <p id="status-line" role="status"></p>
+                <div id="table-wrap">
+                    <table id="places-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
+                                <th>Visible to</th>
+                                <th>Active</th>
+                                <th class="actions-head">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="places-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <dialog id="confirm-dialog">
+        <form method="dialog">
+            <p id="confirm-text"></p>
+            <div class="dialog-buttons">
+                <button value="cancel" type="submit" class="plain">Cancel</button>
+                <button value="yes" type="submit" class="danger">Delete</button>
+            </div>
+        </form>
+    </dialog>
+    <script type="module" src="./js/shell.js"></script>
+    <script type="module" src="./js/places-page.js"></script>
+</body>
+</html>

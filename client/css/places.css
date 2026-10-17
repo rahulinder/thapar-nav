@@ -1,0 +1,104 @@
+html {
+    background-color: #f0f6fc;
+}
+
+body.page-places {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #fdf0d5;
+}
+
+body.page-places #logo-and-search {
+    position: sticky;
+    top: 0;
+}
+
+#hostel-category {
+    position: sticky;
+    top: 88px;
+    z-index: 10;
+    width: calc(100% - 32px);
+    max-width: 992px;
+    margin: 0 16px;
+    padding: 8px 0;
+    background-color: #fdf0d5;
+    border-bottom: 1px solid #0d1117;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+#hostel-category::-webkit-scrollbar {
+    display: none;
+}
+
+#category-chips {
+    display: flex;
+    flex-direction: row;
+    column-gap: 8px;
+    width: max-content;
+}
+
+.hostel-category-buttons {
+    width: fit-content;
+    height: 48px;
+    margin: 0;
+    padding: 0 16px;
+    border: none;
+    border-radius: 100vh;
+    background-color: #0d1117;
+    color: #ffffff;
+    font-size: 16px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.hostel-category-buttons[aria-pressed="true"] {
+    background-color: #cf0000;
+}
+
+#list-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 0;
+}
+
+#page-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+#result-count {
+    font-size: 15px;
+    color: #44505c;
+}
+
+#places-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    width: 100%;
+    padding: 0 16px 120px;
+}
+
+#places-list .cards {
+    width: 100%;
+    margin: 0;
+}
+
+#places-list .state-card,
+#places-list .skeleton-block {
+    grid-column: 1 / -1;
+    margin: 16px 0;
+}
+
+#places-list .skeleton-block .horizontal-scroll-container {
+    flex-direction: column;
+}
+
+#places-list .skeleton-block .cards {
+    width: 100%;
+}

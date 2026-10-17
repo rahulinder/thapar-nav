@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Places</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="./css/places-data.css">
+    <link rel="stylesheet" href="./css/import-places.css">
+    <link rel="stylesheet" href="./css/top-bar.css">
+    <link rel="stylesheet" href="./css/side-bar.css">
+    <link rel="icon" type="image/svg+xml" href="./assets/admin-panel/favicon/database.svg">
+</head>
+<body hidden>
+    <div id="top-bar-container"></div>
+    <div id="dashboard-body">
+        <div id="sidebar-container"></div>
+        <div id="main-container">
+            <div class="outer-card">
+                <a id="title-container" href="./places-data.html">
+                    <img id="title-arrow" alt="" src="./assets/admin-panel/campus-data/arrow-to-left-white.svg">
+                    <p id="title">Import Places</p>
+                </a>
+                <div id="picker">
+                    <p class="intro">Choose a CSV file (you can save one from Excel or Google Sheets). Nothing is saved until you click Import.</p>
+                    <div class="picker-row">
+                        <label class="file-button" for="file-input">Choose CSV file</label>
+                        <input id="file-input" type="file" accept=".csv,text/csv,text/plain">
+                        <button id="template-button" type="button" class="plain">Download template</button>
+                        <span id="file-name"></span>
+                    </div>
+                    <p class="intro small">Required columns: <b>name, category, lat, lng</b>. Optional: description, aliases, visibleTo, openingHours, isEntrance, isActive.</p>
+                </div>
+                <p id="status-line" role="status"></p>
+                <section id="review" hidden>
+                    <div id="summary"></div>
+                    <div id="options">
+                        <fieldset>
+                            <legend>If a place name is already in the database</legend>
+                            <label class="check light"><input type="radio" name="mode" value="skip" checked> Skip it (keep what is there)</label>
+                            <label class="check light"><input type="radio" name="mode" value="update"> Update it with the file's values</label>
+                        </fieldset>
+                        <label class="check light"><input id="problems-only" type="checkbox"> Show only rows with problems</label>
+                    </div>
+                    <div id="table-wrap">
+                        <table id="import-table">
+                            <thead>
+                                <tr>
+                                    <th>Row</th>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
+                                    <th>Hours</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="import-body"></tbody>
+                        </table>
+                    </div>
+                    <div id="actions">
+                        <button id="import-button" type="button" class="primary"></button>
+                        <button id="reset-button" type="button" class="plain">Start over</button>
+                        <a id="done-link" href="./places-data.html" hidden>Go to places list</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="./js/shell.js"></script>
+    <script type="module" src="./js/import-page.js"></script>
+</body>
+</html>
