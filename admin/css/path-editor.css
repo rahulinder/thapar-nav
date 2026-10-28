@@ -301,3 +301,140 @@ dialog p {
         max-height: none;
     }
 }
+
+.dir-arrow {
+  display: block;
+  filter: drop-shadow(0 0 2px #ffffff) drop-shadow(0 0 1px #ffffff);
+  pointer-events: none;
+}
+
+#history-card .history-title {
+    margin: 0 0 12px;
+    padding: 0 8px;
+    color: white;
+    font-size: 28px;
+    font-weight: 500;
+}
+.history-panel {
+    padding: 12px 16px;
+    color: black;
+    background-color: #f0f6fc;
+    border-radius: 16px;
+}
+#history-card .tab-row,
+#history-card .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+#history-card .filter-row {
+    margin-top: 12px;
+}
+#history-card .tab {
+    height: auto;
+    padding: 8px 18px;
+    font-size: 16px;
+    color: black;
+    background-color: white;
+    border: 2px solid #c7d2e0;
+    border-radius: 100vw;
+    transition: 196ms ease-in-out;
+}
+#history-card .tab:hover {
+    border-color: #008152;
+}
+#history-card .tab[aria-pressed="true"] {
+    background-color: #78ffa7;
+    border-color: #008152;
+    font-weight: 600;
+}
+#history-card #search-input,
+#history-card #action-filter {
+    height: 42px;
+    padding: 0 16px;
+    font-size: 16px;
+    background-color: white;
+    border: 2px solid #c7d2e0;
+    border-radius: 100vw;
+}
+#history-card #search-input {
+    flex: 1;
+    min-width: 200px;
+}
+#history-card #search-input:focus-visible,
+#history-card #action-filter:focus-visible,
+#history-card .tab:focus-visible,
+#history-card #more-button:focus-visible {
+    outline: 3px solid #0071e3;
+}
+.history-scroll {
+    margin-top: 12px;
+    overflow-x: auto;
+    border-top: 1px solid #c7d2e0;
+}
+#history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#history-table th,
+#history-table td {
+    padding: 12px 8px;
+    text-align: left;
+    font-size: 16px;
+    border-bottom: 1px solid #d5deea;
+}
+#history-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+#history-table td.muted {
+    color: #5b6672;
+}
+#history-table td.nowrap {
+    white-space: nowrap;
+}
+#history-table td.details {
+    font-size: 14px;
+    color: #374151;
+}
+#history-table td.details p {
+    margin: 0 0 2px;
+}
+#history-card .badge {
+    display: inline-block;
+    padding: 2px 12px;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid #c7d2e0;
+    border-radius: 100vw;
+}
+#history-card .badge-created {
+    background-color: #b9f6ce;
+    border-color: #3fb66b;
+}
+#history-card .badge-updated {
+    background-color: #cfe3f5;
+    border-color: #6aa3d6;
+}
+#history-card .badge-deleted {
+    background-color: #ffb4b4;
+    border-color: #d65a5a;
+}
+.history-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+}
+.history-footer #status-line {
+    margin: 0;
+}
+#history-card #more-button {
+    height: auto;
+    padding: 8px 20px;
+    font-size: 15px;
+    color: black;
+    background-color: white;
+    border: 2px solid #c7d2e0;
+    border-radius: 100vw;
+}

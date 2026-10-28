@@ -325,3 +325,59 @@ dialog p {
     gap: 6px;
     font-size: 14px;
 }
+.name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.name-cell .cell-input {
+    flex: 1;
+    min-width: 0;
+}
+.name-thumb {
+    width: 36px;
+    height: 36px;
+    flex: none;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #cfe3f5;
+}
+.photo-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 10px;
+}
+.photo-label {
+    font-size: 12px;
+    color: #374151;
+}
+.photo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+}
+.photo-preview {
+    width: 160px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #cfe3f5;
+}
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+.photo-input {
+    font-size: 13px;
+    max-width: 260px;
+    color: black;
+}
+.photo-note {
+    margin: 0;
+    font-size: 12px;
+    color: #4b5563;
+}

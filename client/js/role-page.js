@@ -1,4 +1,4 @@
-import { getRole, safeNextUrl, setRole } from "./roles.js";
+import { getRole, safeNextUrl, setLoginPending, setRole } from "./roles.js";
 
 const params = new URLSearchParams(window.location.search);
 const next = safeNextUrl(params.get("next"));
@@ -10,7 +10,13 @@ for (const button of document.querySelectorAll(".role-option")) {
         button.setAttribute("aria-current", "true");
     }
     button.addEventListener("click", () => {
+        const firstChoice = !getRole();
         setRole(role);
-        window.location.href = next;
+        if (firstChoice) {
+            setLoginPending(true);
+            window.location.href = `login.html?next=${encodeURIComponent(next)}`;
+        } else {
+            window.location.href = next;
+        }
     });
 }

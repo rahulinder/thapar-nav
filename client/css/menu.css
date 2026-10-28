@@ -9,10 +9,11 @@
 }
 
 html {
-    background-color: #fdf0d5;
+    background-color: #f0f6fc;
 }
 
 body {
+    background-color: #f0f6fc;
     width: 100%;
     max-width: 1024px;
     min-height: 100vh;
@@ -104,4 +105,13 @@ h1 {
 :focus-visible {
     outline: 3px solid #0071e3;
     outline-offset: 2px;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
 }

@@ -273,7 +273,7 @@ test("API", { skip }, async (t) => {
         assert.equal((await call("POST", "/api/paths/walkways", { body: { from: "x", to: "y" } })).status, 400);
 
         assert.equal((await link("b", "d")).status, 201);
-        assert.equal((await link("a", "c", { wheelchairAccessible: false })).status, 201);
+        assert.equal((await link("a", "c")).status, 201);
         assert.equal((await link("c", "d")).status, 201);
 
         const network = await call("GET", "/api/paths/network", { auth: false });
@@ -288,10 +288,6 @@ test("API", { skip }, async (t) => {
         assert.ok(route.distanceMeters > 200 && route.distanceMeters < 240);
         assert.ok(route.durationSeconds > 150 && route.durationSeconds < 200);
         assert.ok(route.coordinates.length >= 4);
-
-        const accessible = await call("GET", `/api/route?fromLat=${BASE.lat}&fromLng=${BASE.lng}&toLat=${at(0.001, 0.001).lat}&toLng=${at(0.001, 0.001).lng}&accessible=true`, { auth: false });
-        assert.equal(accessible.status, 200);
-        assert.equal(accessible.data.route.accessible, true);
 
         const placeToPlace = await call("PUT", "/api/places/" + library._id, { body: { junction: J.a._id } });
         assert.equal(placeToPlace.status, 200);

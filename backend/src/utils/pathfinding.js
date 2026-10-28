@@ -49,7 +49,9 @@ class MinHeap {
     }
 }
 
-function buildGraph(junctions, walkways, { accessibleOnly = false } = {}) {
+function buildGraph(junctions, walkways, { mode = "walking" } = {}) {
+    const driving = mode === "driving";
+    const used = new Set();
     const nodes = new Map();
     for (const junction of junctions) {
         nodes.set(String(junction._id), {
@@ -61,7 +63,7 @@ function buildGraph(junctions, walkways, { accessibleOnly = false } = {}) {
     }
 
     for (const walkway of walkways) {
-        if (accessibleOnly && walkway.wheelchairAccessible === false) {
+        if (driving && walkway.drivable !== true) {
             continue;
         }
         const from = nodes.get(String(walkway.from));
@@ -69,9 +71,19 @@ function buildGraph(junctions, walkways, { accessibleOnly = false } = {}) {
         if (!from || !to) {
             continue;
         }
+        used.add(from.id);
+        used.add(to.id);
         from.edges.push({ to: to.id, distance: walkway.distanceMeters });
-        if (walkway.bidirectional !== false) {
+        const twoWay = driving ? walkway.driveBidirectional !== false : walkway.bidirectional !== false;
+        if (twoWay) {
             to.edges.push({ to: from.id, distance: walkway.distanceMeters });
+        }
+    }
+    if (driving) {
+        for (const id of [...nodes.keys()]) {
+            if (!used.has(id)) {
+                nodes.delete(id);
+            }
         }
     }
     return nodes;

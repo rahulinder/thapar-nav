@@ -3,22 +3,23 @@ const { HttpError } = require("../utils/httpError");
 const { buildGraph, findShortestPath, nearestNode } = require("../utils/pathfinding");
 
 const WALKING_SPEED_METERS_PER_SECOND = 1.3;
+const DRIVING_SPEED_METERS_PER_SECOND = 5.5;
 const MAX_SNAP_METERS = 400;
 
-let cache = { normal: null, accessible: null };
+let cache = { walking: null, driving: null };
 
 function invalidateGraph() {
-    cache = { normal: null, accessible: null };
+    cache = { walking: null, driving: null };
 }
 
-async function getGraph(accessibleOnly) {
-    const key = accessibleOnly ? "accessible" : "normal";
+async function getGraph(mode) {
+    const key = mode === "driving" ? "driving" : "walking";
     if (!cache[key]) {
         const [junctions, walkways] = await Promise.all([
             Junction.find().lean(),
             Walkway.find().lean()
         ]);
-        cache[key] = buildGraph(junctions, walkways, { accessibleOnly });
+        cache[key] = buildGraph(junctions, walkways, { mode });
     }
     return cache[key];
 }
@@ -66,10 +67,11 @@ function round(value, digits = 1) {
     return Math.round(value * factor) / factor;
 }
 
-async function findRoute({ from, to, role, accessible }) {
-    const graph = await getGraph(accessible);
+async function findRoute({ from, to, role, mode = "walking" }) {
+    const driving = mode === "driving";
+    const graph = await getGraph(mode);
     if (graph.size === 0) {
-        throw new HttpError(503, "The footpath network has not been set up yet.");
+        throw new HttpError(503, driving ? "No drivable roads have been marked yet." : "The footpath network has not been set up yet.");
     }
 
     const start = await resolveEndpoint({ ...from, role, label: "The starting" });
@@ -80,7 +82,7 @@ async function findRoute({ from, to, role, accessible }) {
 
     const result = findShortestPath(graph, startSnap.node.id, endSnap.node.id);
     if (!result) {
-        throw new HttpError(404, "No walking path connects these two points.");
+        throw new HttpError(404, driving ? "No drivable road connects these two points." : "No walking path connects these two points.");
     }
 
     const coordinates = [{ lat: start.point.lat, lng: start.point.lng }];
@@ -93,12 +95,12 @@ async function findRoute({ from, to, role, accessible }) {
     const distanceMeters = startSnap.gap + result.distance + endSnap.gap;
     return {
         distanceMeters: round(distanceMeters),
-        durationSeconds: Math.max(1, Math.round(distanceMeters / WALKING_SPEED_METERS_PER_SECOND)),
-        accessible: Boolean(accessible),
+        durationSeconds: Math.max(1, Math.round(distanceMeters / (driving ? DRIVING_SPEED_METERS_PER_SECOND : WALKING_SPEED_METERS_PER_SECOND))),
+        mode: driving ? "driving" : "walking",
         from: start.info,
         to: end.info,
         coordinates: coordinates.map((c) => ({ lat: round(c.lat, 6), lng: round(c.lng, 6) }))
     };
 }
 
-module.exports = { findRoute, invalidateGraph, WALKING_SPEED_METERS_PER_SECOND, MAX_SNAP_METERS };
+module.exports = { findRoute, invalidateGraph, WALKING_SPEED_METERS_PER_SECOND, DRIVING_SPEED_METERS_PER_SECOND, MAX_SNAP_METERS };

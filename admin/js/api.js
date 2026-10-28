@@ -11,7 +11,8 @@ export class ApiError extends Error {
 
 export async function call(path, { method = "GET", body, auth = true, onSlow } = {}) {
     const headers = { Accept: "application/json" };
-    if (body !== undefined) headers["Content-Type"] = "application/json";
+    const isBlob = typeof Blob !== "undefined" && body instanceof Blob;
+    if (body !== undefined) headers["Content-Type"] = isBlob ? body.type : "application/json";
     if (auth) {
         const session = getSession();
         if (session) headers.Authorization = "Bearer " + session.token;
@@ -24,7 +25,7 @@ export async function call(path, { method = "GET", body, auth = true, onSlow } =
         response = await fetch(API_BASE_URL + API_PREFIX + path, {
             method,
             headers,
-            body: body === undefined ? undefined : JSON.stringify(body),
+            body: body === undefined ? undefined : isBlob ? body : JSON.stringify(body),
             signal: controller.signal
         });
     } catch (error) {
@@ -53,6 +54,9 @@ export async function call(path, { method = "GET", body, auth = true, onSlow } =
         }
         const message = (data && data.error) || "Something went wrong (error " + response.status + ").";
         throw new ApiError(message, response.status, data && data.details);
+    }
+    if (method !== "GET" && /^\/(places|paths)/.test(path)) {
+        document.dispatchEvent(new CustomEvent("data-edited"));
     }
     return data;
 }
@@ -122,4 +126,24 @@ export function deleteWalkway(id) {
 
 export function bulkImportPlaces(places, mode) {
     return call("/places/bulk", { method: "POST", body: { mode, places } });
+}
+
+export function uploadPlacePhoto(id, blob) {
+    return call("/places/" + encodeURIComponent(id) + "/photo", { method: "PUT", body: blob });
+}
+
+export function deletePlacePhoto(id) {
+    return call("/places/" + encodeURIComponent(id) + "/photo", { method: "DELETE" });
+}
+
+export function placePhotoUrl(place) {
+    return API_BASE_URL + API_PREFIX + "/places/" + encodeURIComponent(place._id) + "/photo?v=" + (place.photoVersion || 0);
+}
+
+export function listEditHistory({ entity, action, q, page, limit }) {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (entity) params.set("entity", entity);
+    if (action) params.set("action", action);
+    if (q) params.set("q", q);
+    return call("/audit?" + params.toString());
 }

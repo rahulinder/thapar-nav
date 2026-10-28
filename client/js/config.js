@@ -27,11 +27,8 @@ export const SUGGESTION_LIMIT = 6;
 export const STORAGE_KEYS = {
     role: "thaparNav.role",
     name: "thaparNav.name",
-    places: "thaparNav.places.v1",
-    mapStyle: "thaparNav.mapStyle"
+    places: "thaparNav.places.v1"
 };
-
-export const DEFAULT_MAP_STYLE = "satellite";
 
 export const ROLES = {
     student: {

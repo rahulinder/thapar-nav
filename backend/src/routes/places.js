@@ -49,6 +49,16 @@ function createPlacesRouter({ writeLimiter }) {
     };
 
     router.get("/", optionalAdmin, validate(listRules), controller.listPlaces);
+    router.get("/:id/photo", optionalAdmin, validate([idRule]), controller.getPhoto);
+    router.put(
+        "/:id/photo",
+        writeLimiter,
+        requireAdmin,
+        validate([idRule]),
+        express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "450kb" }),
+        controller.setPhoto
+    );
+    router.delete("/:id/photo", writeLimiter, requireAdmin, validate([idRule]), controller.removePhoto);
     router.get("/:id", optionalAdmin, validate([idRule]), controller.getPlace);
     const bulkRules = [
         body("mode").optional().isIn(["skip", "update"]).withMessage("mode must be skip or update"),

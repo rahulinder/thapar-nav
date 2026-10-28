@@ -26,7 +26,7 @@ Set `PRODUCTION_API_URL` in `admin/js/config.js` to your Render backend address,
 Campus Data, then "Walking Paths", opens a map editor. Routes for visitors are built from the dots and lines you draw here.
 1. Add junction: click the map to drop a dot at gates, corners, bends and building entrances. Zoom in for accuracy.
 2. Draw walkway: click one dot, then the next. Keep clicking to chain walkways. Esc stops.
-3. Select & move: click a dot, line or place. Drag a blue dot to move it (connected walkway lengths update by themselves). Dots can be named, lines can be one-way or marked not wheelchair friendly, and both can be deleted.
+3. Select & move: click a dot, line or place. Drag a blue dot to move it (connected walkway lengths update by themselves). Dots can be named, lines can be one-way or drivable, and both can be deleted.
 4. Link places: click a place square, then "Link to nearest junction". Orange squares are not linked yet and routes cannot reach them.
 5. Click empty map space to see the overview. It warns about separate unconnected parts, red dots with no walkway, and unlinked places.
 Deleting a dot also deletes its walkways and unlinks its places (you are asked first).
@@ -38,3 +38,8 @@ Campus Data, then "Import Places (CSV)" (or the "Import CSV" button on the Place
 3. Choose what happens to names that already exist: skip them, or update them.
 4. Click Import. Rows with problems are never imported. The page shows how many were added, updated, skipped or failed.
 Tips: the words "null", "none" and "-" in a cell are treated as empty. Save the file as "CSV UTF-8" so accents like é survive. `places-fixed.csv` is a cleaned copy of your sheet that imports with no problems.
+
+
+## Adding a photo to a place
+
+Click Add place or the edit icon, then use "Photo of the location" in the lower part of the row. Choose a JPEG, PNG or WebP file. Large photos are shrunk automatically. Click Save to upload it. Use Remove photo and Save to delete it.

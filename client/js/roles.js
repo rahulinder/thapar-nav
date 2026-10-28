@@ -1,5 +1,6 @@
 import { ROLES, STORAGE_KEYS } from "./config.js";
 import { storage } from "./storage.js";
+import { registerVisit } from "./visits.js";
 
 const SAFE_NEXT = /^[A-Za-z0-9_-]+\.html(\?[A-Za-z0-9_\-=&%.+]*)?$/;
 
@@ -41,13 +42,35 @@ export function safeNextUrl(next) {
     return typeof next === "string" && SAFE_NEXT.test(next) ? next : "index.html";
 }
 
+const PENDING_KEY = "thaparNav.pendingLogin";
+
+export function isLoginPending() {
+    return storage.get(PENDING_KEY) === true;
+}
+
+export function setLoginPending(value) {
+    if (value) {
+        storage.set(PENDING_KEY, true);
+    } else {
+        storage.remove(PENDING_KEY);
+    }
+}
+
+function currentPage() {
+    const page = window.location.pathname.split("/").pop() || "index.html";
+    return `${page}${window.location.search}`;
+}
+
 export function requireRole() {
     const role = getRole();
-    if (role) {
-        return role;
+    if (!role) {
+        window.location.replace(`user-option.html?next=${encodeURIComponent(currentPage())}`);
+        return null;
     }
-    const page = window.location.pathname.split("/").pop() || "index.html";
-    const here = `${page}${window.location.search}`;
-    window.location.replace(`login.html?next=${encodeURIComponent(here)}`);
-    return null;
+    if (isLoginPending()) {
+        window.location.replace(`login.html?next=${encodeURIComponent(currentPage())}`);
+        return null;
+    }
+    registerVisit(role);
+    return role;
 }

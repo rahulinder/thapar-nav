@@ -15,6 +15,7 @@ html {
 }
 
 body {
+    background-color: #f0f6fc;
     margin: 0 auto;
     padding: 0;
     width: 100%;
@@ -57,10 +58,7 @@ a {
     margin: 0;
     padding: 8px 16px;
     background-color: #0d1117;
-    background-image: url(../assets/client-interface/doodle-dark-1.svg);
-    background-repeat: no-repeat;
-    background-size: 100%;
-    background-position: top;
+    background: linear-gradient(to right, #0d1117, #001636);
 }
 
 #logo {
@@ -250,6 +248,10 @@ a {
     background-image: url(../assets/client-interface/cards/images/hostel-o.jpg);
 }
 
+.place-card.has-photo {
+    background-image: linear-gradient(to top, rgba(13, 17, 23, 0.6) 0%, rgba(13, 17, 23, 0) 55%), var(--photo);
+}
+
 .card-open {
     position: absolute;
     inset: 0;
@@ -289,7 +291,7 @@ a {
     min-height: 116px;
     margin: 16px;
     margin-top: auto;
-    padding: 10px 20px 12px;
+    padding: 12px;
     background-color: #f0f6fc;
     border: none;
     border-radius: 40px;
@@ -304,7 +306,7 @@ a {
     width: 100%;
     min-height: 44px;
     margin: 0;
-    padding: 0 0 6px;
+    padding: 0 8px 6px;
     border-bottom: 1px solid #0d1117;
     font-size: 24px;
     font-weight: 500;
@@ -333,7 +335,7 @@ a {
     margin: 0;
     padding: 0;
     border: none;
-    border-radius: 16px;
+    border-radius: 32px;
     background-color: #0d1117;
     color: #ffffff;
     font-size: 18px;
@@ -496,7 +498,7 @@ a {
     padding: 0;
     border: none;
     border-radius: 50%;
-    background: transparent;
+    background: rgba(240, 246, 252, 0.85);
     cursor: pointer;
 }
 
@@ -620,4 +622,23 @@ a {
 
 .panel-title:focus {
     outline: none;
+}
+
+.panel-photo {
+    display: block;
+    width: 100%;
+    height: 200px;
+    margin: 8px 0 12px;
+    object-fit: cover;
+    border-radius: 20px;
+    background: #cfe3f5;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
 }

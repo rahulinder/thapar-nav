@@ -19,11 +19,14 @@ const state = {
     places: new Map(),
     selected: null,
     connectFrom: null,
-    busy: false
+    busy: false,
+    defaults: { bidirectional: true, drivable: false, driveBidirectional: true }
 };
 
 let map = null;
 let walkLayer = null;
+let casingLayer = null;
+let arrowLayer = null;
 let junctionLayer = null;
 let placeLayer = null;
 
@@ -95,12 +98,67 @@ function placeIcon(classes) {
 
 function walkStyle(data, selected) {
     return {
-        color: selected ? "#ff9500" : data.wheelchairAccessible === false ? "#7c3aed" : "#0071e3",
+        color: selected ? "#ff9500" : "#0071e3",
         weight: selected ? 7 : 5,
         opacity: 0.85,
         dashArray: data.bidirectional === false ? "8 8" : null,
         bubblingMouseEvents: false
     };
+}
+
+function bearing(a, b) {
+    const p1 = L.CRS.EPSG3857.project(L.latLng(a.lat, a.lng));
+    const p2 = L.CRS.EPSG3857.project(L.latLng(b.lat, b.lng));
+    return (Math.atan2(-(p2.y - p1.y), p2.x - p1.x) * 180) / Math.PI;
+}
+
+function arrowIcon(kind, color, angle) {
+    const html = '<svg class="dir-arrow ' + kind + '" viewBox="0 0 16 16" width="18" height="18" style="transform:rotate(' + angle.toFixed(1) + 'deg)"><path d="M2 2l12 6-12 6 3-6z" fill="' + color + '"/></svg>';
+    return L.divIcon({ className: "", html, iconSize: [18, 18], iconAnchor: [9, 9] });
+}
+
+function pointAt(a, b, t) {
+    return [a.lat + (b.lat - a.lat) * t, a.lng + (b.lng - a.lng) * t];
+}
+
+function decorSignature(data, a, b) {
+    return [data.drivable === true, data.driveBidirectional !== false, data.bidirectional !== false, a.lat, a.lng, b.lat, b.lng].join("|");
+}
+
+function removeDecor(entry) {
+    if (entry.casing) casingLayer.removeLayer(entry.casing);
+    for (const arrow of entry.arrows || []) arrowLayer.removeLayer(arrow);
+    entry.casing = null;
+    entry.arrows = [];
+    entry.sig = null;
+}
+
+function rebuildDecor(entry) {
+    const a = state.junctions.get(entry.data.from);
+    const b = state.junctions.get(entry.data.to);
+    if (!a || !b) return;
+    const sig = decorSignature(entry.data, a.data, b.data);
+    if (entry.sig === sig) return;
+    removeDecor(entry);
+    entry.sig = sig;
+    const data = entry.data;
+    const latlngs = [[a.data.lat, a.data.lng], [b.data.lat, b.data.lng]];
+    const angle = bearing(a.data, b.data);
+    if (data.drivable === true) {
+        entry.casing = L.polyline(latlngs, { color: "#16a34a", weight: 13, opacity: 0.4, lineCap: "round", interactive: false }).addTo(casingLayer);
+    }
+    const walkColor = "#0071e3";
+    if (data.bidirectional === false) {
+        entry.arrows.push(L.marker(pointAt(a.data, b.data, 0.38), { icon: arrowIcon("walk", walkColor, angle), interactive: false, keyboard: false }).addTo(arrowLayer));
+    }
+    if (data.drivable === true && data.driveBidirectional === false) {
+        entry.arrows.push(L.marker(pointAt(a.data, b.data, 0.62), { icon: arrowIcon("drive", "#15803d", angle), interactive: false, keyboard: false }).addTo(arrowLayer));
+    }
+}
+
+function removeWalkLayers(entry) {
+    walkLayer.removeLayer(entry.line);
+    removeDecor(entry);
 }
 
 function refreshStyles() {
@@ -115,6 +173,7 @@ function refreshStyles() {
     for (const [id, entry] of state.walkways) {
         const selected = state.selected && state.selected.type === "walkway" && state.selected.id === id;
         entry.line.setStyle(walkStyle(entry.data, selected));
+        rebuildDecor(entry);
     }
     for (const [id, entry] of state.places) {
         const classes = [];
@@ -156,7 +215,9 @@ function addWalkwayToMap(data) {
         if (state.mode === "select") select("walkway", data._id);
     });
     line.addTo(walkLayer);
-    state.walkways.set(data._id, { data, line });
+    const entry = { data, line, casing: null, arrows: [], sig: null };
+    state.walkways.set(data._id, entry);
+    rebuildDecor(entry);
 }
 
 function addPlaceToMap(data) {
@@ -222,7 +283,7 @@ async function onJunctionClick(id) {
     }
     state.busy = true;
     try {
-        const response = await createWalkway({ from: state.connectFrom, to: id });
+        const response = await createWalkway({ from: state.connectFrom, to: id, ...state.defaults });
         addWalkwayToMap(response.walkway);
         state.connectFrom = id;
         setHint("Walkway added. Click the next junction to continue, or press Esc to stop.");
@@ -316,7 +377,7 @@ function renderOverview() {
     if (state.junctions.size > 0 && parts === 1 && isolated.length === 0 && unlinked.length === 0 && state.places.size > 0) {
         nodes.push(el("p", { class: "good", text: "Everything is connected. Routing should work." }));
     }
-    nodes.push(el("p", { class: "muted", text: "Blue line: two-way walkway. Dashed: one-way. Purple: not wheelchair friendly. Purple squares: places linked to a junction." }));
+    nodes.push(el("p", { class: "muted", text: "Blue line: two-way walkway. Dashed: one-way. Green glow: drivable. Arrows show one-way direction (blue: walking, green: driving). Purple squares: places linked to a junction." }));
     return nodes;
 }
 
@@ -350,7 +411,7 @@ function renderJunctionPanel(id) {
             await deleteJunction(id);
             for (const [wid, w] of [...state.walkways]) {
                 if (w.data.from === id || w.data.to === id) {
-                    walkLayer.removeLayer(w.line);
+                    removeWalkLayers(w);
                     state.walkways.delete(wid);
                 }
             }
@@ -385,6 +446,25 @@ function renderJunctionPanel(id) {
     return nodes;
 }
 
+function checkbox(checked, onChange) {
+    const input = el("input", { type: "checkbox" });
+    input.checked = checked;
+    input.addEventListener("change", () => onChange(input.checked));
+    return input;
+}
+
+function connectOptions() {
+    const d = state.defaults;
+    const rows = [
+        el("label", { class: "check" }, [checkbox(d.bidirectional, (v) => { d.bidirectional = v; }), "Can be walked both ways"]),
+        el("label", { class: "check" }, [checkbox(d.drivable, (v) => { d.drivable = v; renderPanel(); }), "Drivable"])
+    ];
+    if (d.drivable) {
+        rows.push(el("label", { class: "check" }, [checkbox(d.driveBidirectional, (v) => { d.driveBidirectional = v; }), "Drivable both ways (untick for one-way)"]));
+    }
+    return rows;
+}
+
 function renderWalkwayPanel(id) {
     const entry = state.walkways.get(id);
     const data = entry.data;
@@ -392,14 +472,19 @@ function renderWalkwayPanel(id) {
     name.value = data.name || "";
     const two = el("input", { type: "checkbox" });
     two.checked = data.bidirectional !== false;
-    const chair = el("input", { type: "checkbox" });
-    chair.checked = data.wheelchairAccessible !== false;
+    const drive = el("input", { type: "checkbox" });
+    drive.checked = data.drivable === true;
+    const driveTwo = el("input", { type: "checkbox" });
+    driveTwo.checked = data.driveBidirectional !== false;
+    const driveTwoRow = el("label", { class: "check" }, [driveTwo, "Drivable both ways (untick for one-way)"]);
+    driveTwoRow.hidden = !drive.checked;
+    drive.addEventListener("change", () => { driveTwoRow.hidden = !drive.checked; });
     const errors = el("div");
     const save = el("button", { type: "button", class: "primary", text: "Save", onclick: async () => {
         clear(errors);
         save.disabled = true;
         try {
-            const response = await updateWalkway(id, { name: name.value.trim(), bidirectional: two.checked, wheelchairAccessible: chair.checked });
+            const response = await updateWalkway(id, { name: name.value.trim(), bidirectional: two.checked, drivable: drive.checked, driveBidirectional: driveTwo.checked });
             entry.data = { ...entry.data, ...response.walkway };
             toast("Walkway saved.");
             refreshStyles();
@@ -414,7 +499,7 @@ function renderWalkwayPanel(id) {
         remove.disabled = true;
         try {
             await deleteWalkway(id);
-            walkLayer.removeLayer(entry.line);
+            removeWalkLayers(entry);
             state.walkways.delete(id);
             state.selected = null;
             refreshStyles();
@@ -430,7 +515,8 @@ function renderWalkwayPanel(id) {
         el("p", { class: "muted", text: junctionLabel(data.from) + " to " + junctionLabel(data.to) + " · " + Math.round(data.distanceMeters) + " m" }),
         field("Name (optional)", name),
         el("label", { class: "check" }, [two, "Can be walked both ways"]),
-        el("label", { class: "check" }, [chair, "Wheelchair friendly"]),
+        el("label", { class: "check" }, [drive, "Drivable"]),
+        driveTwoRow,
         errors,
         el("div", { class: "btn-row" }, [save, remove])
     ];
@@ -499,7 +585,8 @@ function renderPanel() {
         nodes = [
             el("h3", { text: "Draw walkway" }),
             el("p", { text: state.connectFrom ? "Starting at " + junctionLabel(state.connectFrom) + "." : "Click the first junction." }),
-            el("p", { class: "muted", text: "Every walkway is two-way and wheelchair friendly by default. Change that later in Select mode." })
+            el("p", { class: "muted", text: "These settings apply to each walkway you draw next. One-way follows the order you click the junctions." }),
+            ...connectOptions()
         ];
     } else if (state.mode === "junction") {
         nodes = [
@@ -552,8 +639,12 @@ async function load() {
 function start() {
     map = L.map("map", { center: [CAMPUS_CENTER.lat, CAMPUS_CENTER.lng], zoom: MAP_ZOOM, maxZoom: 20, doubleClickZoom: false });
     map.attributionControl.setPrefix(false);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap" }).addTo(map);
+    const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 20, maxNativeZoom: 18, attribution: "Imagery &copy; Esri" }).addTo(map);
+    const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap" });
+    L.control.layers({ Satellite: satelliteLayer, Map: streetLayer }, null, { position: "topright", collapsed: false }).addTo(map);
+    casingLayer = L.layerGroup().addTo(map);
     walkLayer = L.layerGroup().addTo(map);
+    arrowLayer = L.layerGroup().addTo(map);
     placeLayer = L.layerGroup().addTo(map);
     junctionLayer = L.layerGroup().addTo(map);
     map.on("click", onMapClick);

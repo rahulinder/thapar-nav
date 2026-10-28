@@ -1,0 +1,139 @@
+#profile-note {
+    margin: 0;
+    padding: 8px 16px;
+    font-size: 16px;
+    color: #44505c;
+}
+
+#profile-rows {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 2px solid #0d1117;
+}
+
+.profile-text {
+    min-width: 0;
+}
+
+.profile-label {
+    margin: 0;
+    font-size: 14px;
+    color: #44505c;
+}
+
+.profile-value {
+    margin: 2px 0 0;
+    font-size: 24px;
+    font-weight: 450;
+    overflow-wrap: anywhere;
+}
+
+.profile-value.is-empty {
+    color: #6b7785;
+}
+
+.profile-edit,
+.profile-actions button {
+    min-width: 72px;
+    height: 40px;
+    padding: 0 16px;
+    color: #ffffff;
+    font-size: 16px;
+    background-color: #0d1117;
+    border: none;
+    border-radius: 100vw;
+    cursor: pointer;
+}
+
+.profile-actions .profile-cancel {
+    color: #0d1117;
+    background-color: #ffffff;
+    border: 2px solid #0d1117;
+}
+
+.profile-editor {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    padding: 12px 16px 16px;
+    border-bottom: 2px solid #0d1117;
+}
+
+.profile-editor input,
+.profile-editor select {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    font-size: 18px;
+    color: #0d1117;
+    background-color: #ffffff;
+    border: 2px solid #c7d2e0;
+    border-radius: 100vw;
+}
+
+.profile-actions {
+    display: flex;
+    column-gap: 8px;
+}
+
+.profile-error {
+    margin: 0;
+    font-size: 15px;
+    color: #cf0000;
+}
+
+#profile-status {
+    margin: 0;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: #1f7a33;
+}
+
+#profile-status.is-error {
+    color: #cf0000;
+}
+
+* {
+    scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+#profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin: 8px auto 16px;
+    font-size: 32px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #0d1117;
+    border-radius: 50%;
+}
+
+#profile-logout {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 24px 16px 0;
+    padding: 12px 16px;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: #cf0000;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+}

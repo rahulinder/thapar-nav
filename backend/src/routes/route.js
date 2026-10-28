@@ -28,7 +28,7 @@ function createRouteRouter({ routeLimiter }) {
         ...endpointRules("from", "Start"),
         ...endpointRules("to", "Destination"),
         query("role").optional().isString().bail().isIn(ROLES).withMessage("Unknown role"),
-        query("accessible").optional().isIn(["true", "false"]).withMessage("accessible must be true or false")
+        query("mode").optional().isIn(["walking", "driving"]).withMessage("mode must be walking or driving")
     ];
 
     router.get("/", routeLimiter, validate(rules), controller.getRoute);

@@ -45,17 +45,22 @@ test("returns null when no path exists and handles same start and goal", () => {
     assert.equal(findShortestPath(graph, "a", "missing"), null);
 });
 
-test("accessible-only graphs skip inaccessible walkways", () => {
-    const walkways = [W("a", "b", 100, { wheelchairAccessible: false }), W("a", "c", 100), W("c", "b", 100)];
-    const normal = findShortestPath(buildGraph(junctions, walkways), "a", "b");
-    assert.deepEqual(normal.nodeIds, ["a", "b"]);
-    const accessible = findShortestPath(buildGraph(junctions, walkways, { accessibleOnly: true }), "a", "b");
-    assert.deepEqual(accessible.nodeIds, ["a", "c", "b"]);
-});
-
 test("nearestNode picks the closest junction", () => {
     const graph = buildGraph(junctions, []);
     const hit = nearestNode(graph, { lat: 30.3556, lng: 76.3622 });
     assert.equal(hit.node.id, "b");
     assert.ok(hit.distance < 30);
+});
+
+test("driving mode uses only drivable walkways and one-way direction", () => {
+    const { buildGraph, findShortestPath } = require("../src/utils/pathfinding");
+    const j = ["a", "b", "c", "d"].map((id) => ({ _id: id, lat: 0, lng: 0 }));
+    const w = (from, to, extra) => ({ from, to, distanceMeters: 100, ...extra });
+    const g = buildGraph(j, [w("a", "b", { drivable: true, driveBidirectional: false }), w("b", "c", {})], { mode: "driving" });
+    assert.ok(findShortestPath(g, "a", "b"));
+    assert.equal(findShortestPath(g, "b", "a"), null);
+    assert.equal(g.has("c"), false);
+    assert.equal(g.has("d"), false);
+    const walk = buildGraph(j, [w("a", "b", { drivable: true, driveBidirectional: false }), w("b", "c", {})]);
+    assert.ok(findShortestPath(walk, "c", "a"));
 });

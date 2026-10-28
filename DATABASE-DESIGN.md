@@ -47,7 +47,8 @@ Indexes: category, role visibility, and a hidden lowercase copy of the name (`na
 | from, to | links to Junctions | both required and different from each other |
 | distanceMeters | number | required, above zero; the server will calculate it later from the two junctions |
 | bidirectional | true or false | defaults to true, meaning it can be walked both ways |
-| wheelchairAccessible | true or false | defaults to true |
+| drivable | true or false | defaults to false |
+| driveBidirectional | true or false | defaults to true; false means one-way from `from` to `to` for driving |
 | name | text | optional |
 
 The same pair of junctions can only be joined once (`from` plus `to` is unique).
@@ -71,3 +72,7 @@ Latitude and longitude values are accepted only inside a box around the campus, 
 ## Every record also has
 
 `_id` (unique id made by MongoDB), `createdAt` and `updatedAt` (filled in automatically).
+
+## EditLog (edit history)
+
+One document per add, change or delete of a place, junction or walkway: `admin` (who, as an Admin id), `adminName` (their name at that moment, so old entries stay readable if the name changes), `action` (created, updated, deleted), `entity` (place, junction, walkway), `entityId`, `entityName` (name or label at that moment, so deleted items can still be identified), `summary`, `changes` (`field`, `from`, `to`) and `createdAt`. If saving a log entry fails, the edit itself still goes through and the error is printed to the server log.

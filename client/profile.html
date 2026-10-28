@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Thapar-Nav</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/common/ti-logo-without-name.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/menu.css">
+    <link rel="stylesheet" href="./css/profile.css">
+
+    <script type="module" src="./js/profile-page.js"></script>
+</head>
+<body>
+<main>
+    <div id="menu-options">
+        <span><a href="index.html" class="close-link" aria-label="Back to home"><img src="./assets/client-interface/balck-cross.svg" alt=""></a></span>
+        <h1>Profile</h1>
+        <div id="profile-avatar" aria-hidden="true">G</div>
+        <p id="profile-note" hidden></p>
+        <section id="profile-rows" aria-label="Your details">
+            <div class="profile-row" data-field="name">
+                <div class="profile-text">
+                    <p class="profile-label">Name</p>
+                    <p class="profile-value" data-value></p>
+                </div>
+                <button type="button" class="profile-edit">Edit</button>
+            </div>
+            <div class="profile-row" data-field="contact">
+                <div class="profile-text">
+                    <p class="profile-label">Contact</p>
+                    <p class="profile-value" data-value></p>
+                </div>
+                <button type="button" class="profile-edit">Edit</button>
+            </div>
+            <div class="profile-row" data-field="role">
+                <div class="profile-text">
+                    <p class="profile-label">User type</p>
+                    <p class="profile-value" data-value></p>
+                </div>
+                <button type="button" class="profile-edit">Edit</button>
+            </div>
+        </section>
+        <button type="button" id="profile-logout">Log out</button>
+        <p id="profile-status" role="status" aria-live="polite"></p>
+    </div>
+</main>
+</body>
+</html>

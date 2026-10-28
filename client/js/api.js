@@ -96,7 +96,10 @@ export function normalizePlace(raw) {
         lng,
         openingHours: toText(raw.openingHours),
         isEntrance: Boolean(raw.isEntrance),
-        visibleTo: Array.isArray(raw.visibleTo) ? raw.visibleTo : []
+        visibleTo: Array.isArray(raw.visibleTo) ? raw.visibleTo : [],
+        photoUrl: raw.hasPhoto
+            ? `${API_BASE_URL}${API_PREFIX}/places/${encodeURIComponent(id)}/photo?v=${Number(raw.photoVersion) || 0}`
+            : ""
     };
 }
 

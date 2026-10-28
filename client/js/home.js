@@ -9,6 +9,8 @@ import {
 } from "./config.js";
 import { byId, clear, el, prefersReducedMotion } from "./dom.js";
 import { requireRole, getVisitorName } from "./roles.js";
+import { storage } from "./storage.js";
+import { addRecent, clearRecent, getFavouriteIds, getRecentIds } from "./saved.js";
 import { createStatusBar } from "./status-bar.js";
 import { createLoader } from "./places-store.js";
 import { createSearchBox } from "./search-box.js";
@@ -21,7 +23,8 @@ import { startRoute, setRouteHandler, openInGoogleMaps } from "./route.js";
 import { fetchRoute } from "./api.js";
 import { buildSteps, formatDistance } from "./directions.js";
 import { createOffRouteTracker } from "./offroute.js";
-import { buildShortcuts } from "./shortcuts.js";
+
+const WELCOME_KEY = "thaparNav.welcomed";
 
 function main() {
     const role = requireRole();
@@ -48,28 +51,155 @@ function main() {
         }
     });
 
-    const map = createCampusMap(byId("map"), { onSelect: (place) => panel.open(place) });
+    const map = createCampusMap(byId("map"), { onSelect: (place) => panel.open(place), onRoute: (place) => startRoute(place) });
+
+    const mapMessage = byId("map-message");
+
+    function showMapMessage(text, { retry = false } = {}) {
+        clear(mapMessage);
+        mapMessage.append(el("span", { text }));
+        if (retry) {
+            mapMessage.append(el("button", { type: "button", text: "Try again", onclick: () => window.location.reload() }));
+        }
+        mapMessage.hidden = false;
+    }
+
+    function hideMapMessage() {
+        mapMessage.hidden = true;
+        clear(mapMessage);
+    }
+
+    if (!map.available) {
+        showMapMessage("The map could not load. Check your internet connection.", { retry: true });
+    }
 
     const searchBox = createSearchBox({
         form: byId("search-bar"),
         input: byId("search-input"),
         list: byId("search-suggestions"),
         onSelect: (place) => {
+            addRecent(place.id);
             map.focusPlace(place);
             panel.open(place);
         }
     });
 
+    const myPlaces = byId("my-places");
+
+    function placeChip(place) {
+        return el("button", {
+            type: "button",
+            class: "place-chip",
+            text: place.name,
+            onclick: () => {
+                map.focusPlace(place);
+                panel.open(place);
+            }
+        });
+    }
+
+    function chipGroup(title, chips, action = null) {
+        return el("div", { class: "my-places-group" }, [
+            el("div", { class: "my-places-head" }, [
+                el("h3", { class: "horizontal-scroll-titles", text: title }),
+                action
+            ]),
+            el("div", { class: "chip-row" }, chips)
+        ]);
+    }
+
+    function renderMyPlaces() {
+        clear(myPlaces);
+        const byPlaceId = new Map(places.map((place) => [place.id, place]));
+        const saved = getFavouriteIds().map((id) => byPlaceId.get(id)).filter(Boolean);
+        const savedIds = new Set(saved.map((place) => place.id));
+        const recent = getRecentIds().filter((id) => !savedIds.has(id)).map((id) => byPlaceId.get(id)).filter(Boolean);
+        if (saved.length) {
+            myPlaces.append(chipGroup("Saved places", saved.map(placeChip)));
+        }
+        if (recent.length) {
+            myPlaces.append(
+                chipGroup(
+                    "Recent searches",
+                    recent.map(placeChip),
+                    el("button", { type: "button", class: "chip-clear", text: "Clear", onclick: clearRecent })
+                )
+            );
+        }
+        myPlaces.hidden = saved.length === 0 && recent.length === 0;
+    }
+
+    document.addEventListener("saved-changed", renderMyPlaces);
+
+    const HINT_KEY = "thaparNav.mapHintSeen";
+    const mapTools = byId("map-tools");
+    let hintSeen = false;
+    try {
+        hintSeen = window.localStorage.getItem(HINT_KEY) === "1";
+    } catch {
+        hintSeen = false;
+    }
+    function hideHints() {
+        mapTools.classList.remove("show-hints");
+        try {
+            window.localStorage.setItem(HINT_KEY, "1");
+        } catch {
+        }
+    }
+    if (!hintSeen) {
+        mapTools.classList.add("show-hints");
+        mapTools.addEventListener("click", hideHints, { once: true });
+        setTimeout(hideHints, 8000);
+    }
+
+    const expandButton = byId("expand-button");
+    expandButton.addEventListener("click", () => {
+        const expanded = byId("home-map").classList.toggle("is-expanded");
+        document.body.classList.toggle("map-expanded", expanded);
+        expandButton.classList.toggle("is-active", expanded);
+        expandButton.setAttribute("aria-pressed", String(expanded));
+        expandButton.setAttribute("aria-label", expanded ? "Shrink map" : "Expand map");
+        expandButton.title = expanded ? "Shrink map" : "Expand map";
+        byId("home-map").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+    });
+
     function renderRoleNote() {
-        const name = getVisitorName();
         const note = byId("role-note");
         clear(note);
-        note.append(
-            el("span", {
-                text: `${name ? `Hi ${name}. ` : ""}Showing places for ${ROLES[role].plural}.`
-            }),
-            el("a", { href: "user-option.html?next=index.html", text: "Change" })
-        );
+        note.hidden = true;
+        if (storage.get(WELCOME_KEY)) {
+            return;
+        }
+        storage.set(WELCOME_KEY, true);
+        const name = getVisitorName();
+        const text = name ? `Hi ${name}, Welcome to Thapar` : "Welcome to Thapar";
+        const span = el("span", { class: "welcome-text" });
+        note.append(span);
+        note.hidden = false;
+        const finish = () => {
+            note.classList.add("is-leaving");
+            window.setTimeout(() => {
+                note.hidden = true;
+                clear(note);
+                note.classList.remove("is-leaving");
+            }, 500);
+        };
+        if (prefersReducedMotion()) {
+            span.textContent = text;
+            window.setTimeout(finish, 2500);
+            return;
+        }
+        note.classList.add("is-typing");
+        let count = 0;
+        const timer = window.setInterval(() => {
+            count += 1;
+            span.textContent = text.slice(0, count);
+            if (count >= text.length) {
+                window.clearInterval(timer);
+                note.classList.remove("is-typing");
+                window.setTimeout(finish, 1500);
+            }
+        }, 60);
     }
 
     function updateLocationLabel() {
@@ -96,6 +226,7 @@ function main() {
     const tracker = createOffRouteTracker();
 
     function clearRoute() {
+        travelMode = "walking";
         routeToken += 1;
         tracker.stop();
         map.clearRoute();
@@ -105,24 +236,60 @@ function main() {
         clear(routeBanner);
     }
 
+    let travelMode = "walking";
+
     function formatDuration(seconds) {
         const minutes = Math.max(1, Math.round(seconds / 60));
-        return `${minutes} min walk`;
+        return `${minutes} min ${travelMode === "driving" ? "drive" : "walk"}`;
     }
 
-    function showBanner({ title, meta, tone = "info", buttons = [] }) {
+    function setMode(mode) {
+        if (mode === travelMode || !currentTo) {
+            return;
+        }
+        travelMode = mode;
+        showRoute(currentTo, currentFrom);
+    }
+
+    function showBanner({ title, meta, tone = "info", loading = false, buttons = [] }) {
         clear(routeBanner);
         routeBanner.dataset.tone = tone;
         routeBanner.hidden = false;
         routeBanner.append(
             el("div", { class: "route-info" }, [
-                el("span", { class: "route-title", text: title }),
+                el("div", { class: "route-heading" }, [
+                    loading ? el("span", { class: "route-spinner", "aria-hidden": "true" }) : null,
+                    el("span", { class: "route-title", text: title })
+                ]),
+                loading
+                    ? el("div", { class: "route-skeleton", "aria-hidden": "true" }, [el("span"), el("span")])
+                    : null,
                 meta ? el("span", { class: "route-meta", text: meta }) : null
             ]),
             el(
                 "div",
+                { class: "route-modes", role: "group", "aria-label": "Travel mode" },
+                [["walking", "Walking"], ["driving", "Driving"]].map(([mode, label]) =>
+                    el("button", {
+                        type: "button",
+                        class: mode === travelMode ? "mode-button is-active" : "mode-button",
+                        "aria-pressed": String(mode === travelMode),
+                        text: label,
+                        onclick: () => setMode(mode)
+                    })
+                )
+            ),
+            el(
+                "div",
                 { class: "route-buttons" },
-                buttons.map((button) => el("button", { type: "button", text: button.label, onclick: button.onClick }))
+                buttons.map((button) =>
+                    el("button", {
+                        type: "button",
+                        class: button.label === "Clear route" ? "danger" : "",
+                        text: button.label,
+                        onclick: button.onClick
+                    })
+                )
             )
         );
     }
@@ -192,7 +359,7 @@ function main() {
             return;
         }
 
-        const params = { toPlace: place.id, role };
+        const params = { toPlace: place.id, role, mode: travelMode };
         let startNote;
         let usingGps = false;
         if (fromPlace) {
@@ -220,7 +387,8 @@ function main() {
 
         showBanner({
             title,
-            meta: auto ? "You left the path. Finding a new route..." : "Finding the best walking path...",
+            loading: true,
+            meta: auto ? "You left the path. Finding a new route..." : travelMode === "driving" ? "Finding the best driving route..." : "Finding the best walking path...",
             buttons: [{ label: "Cancel", onClick: clearRoute }]
         });
 
@@ -229,7 +397,11 @@ function main() {
             if (token !== routeToken) {
                 return;
             }
-            map.drawRoute(route.coordinates, { fit: !auto });
+            map.drawRoute(route.coordinates, {
+                fit: false,
+                only: [place.id, params.fromPlace].filter(Boolean),
+                zoomTo: auto ? null : route.coordinates[0]
+            });
             if (usingGps) {
                 tracker.start(route.coordinates, place);
             }
@@ -254,7 +426,7 @@ function main() {
                 tone: "error",
                 buttons: [
                     changeButton,
-                    { label: "Open in Google Maps", onClick: () => openInGoogleMaps(place) },
+                    { label: "Open in Google Maps", onClick: () => openInGoogleMaps(place, travelMode) },
                     { label: "Close", onClick: clearRoute }
                 ]
             });
@@ -292,6 +464,14 @@ function main() {
         planner.hidden = true;
     });
     byId("directions-button").addEventListener("click", openPlanner);
+    const layerButton = byId("layer-button");
+    layerButton.addEventListener("click", () => {
+        const satellite = map.toggleSatellite();
+        layerButton.classList.toggle("is-active", satellite);
+        layerButton.setAttribute("aria-pressed", String(satellite));
+        layerButton.setAttribute("aria-label", satellite ? "Switch to map view" : "Switch to satellite view");
+        layerButton.title = satellite ? "Map view" : "Satellite view";
+    });
 
     setRouteHandler(showRoute);
 
@@ -321,42 +501,23 @@ function main() {
         }
     }
 
-    const shortcutsNav = byId("shortcuts");
-
-    function shortcutOrigin() {
-        if (userPoint && distanceMeters(userPoint, CAMPUS_CENTER) <= CAMPUS_RADIUS_METERS) {
-            return userPoint;
-        }
-        return places.find((item) => item.isEntrance) || CAMPUS_CENTER;
-    }
-
-    function renderShortcuts() {
-        clear(shortcutsNav);
-        const items = buildShortcuts(role, places, shortcutOrigin());
-        shortcutsNav.hidden = items.length === 0;
-        for (const item of items) {
-            shortcutsNav.append(
-                el("button", {
-                    type: "button",
-                    title: `Route to ${item.place.name}`,
-                    text: item.label,
-                    onclick: () => showRoute(item.place)
-                })
-            );
-        }
-    }
-
     function renderPlaces(list) {
         places = list;
         clear(sections);
+        renderMyPlaces();
+        if (map.available) {
+            hideMapMessage();
+        }
         map.setPlaces(places);
         searchBox.setPlaces(places);
         fromBox.setPlaces(places);
         toBox.setPlaces(places);
         updateLocationLabel();
-        renderShortcuts();
 
         if (places.length === 0) {
+            if (map.available) {
+                showMapMessage("No places to show yet.");
+            }
             sections.append(
                 createStateCard({
                     title: "No places yet",
@@ -430,14 +591,8 @@ function main() {
         }
     }
 
-    let shortcutsPoint = null;
-
     function handleFix(point) {
         userPoint = point;
-        if (!shortcutsPoint || distanceMeters(shortcutsPoint, point) > 100) {
-            shortcutsPoint = point;
-            renderShortcuts();
-        }
         updateLocationLabel();
         const onCampus = distanceMeters(point, CAMPUS_CENTER) <= CAMPUS_RADIUS_METERS;
         if (onCampus) {

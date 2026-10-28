@@ -34,9 +34,42 @@
                     <aside id="panel" aria-live="polite"></aside>
                 </div>
             </div>
+            <div class="outer-card" id="history-card" data-limit="10">
+                <p class="history-title">Edit History</p>
+                <div class="history-panel">
+                    <div class="tab-row" role="group" aria-label="What was changed">
+                        <button type="button" class="tab" data-entity="" aria-pressed="true">All</button>
+                        <button type="button" class="tab" data-entity="place" aria-pressed="false">Places</button>
+                        <button type="button" class="tab" data-entity="walkway" aria-pressed="false">Walkways</button>
+                        <button type="button" class="tab" data-entity="junction" aria-pressed="false">Junctions</button>
+                    </div>
+                    <div class="filter-row">
+                        <input id="search-input" type="search" placeholder="Search by name or admin" aria-label="Search edit history" maxlength="80">
+                        <select id="action-filter" aria-label="Filter by action">
+                            <option value="">All actions</option>
+                            <option value="created">Added</option>
+                            <option value="updated">Changed</option>
+                            <option value="deleted">Deleted</option>
+                        </select>
+                    </div>
+                    <div class="history-scroll">
+                        <table id="history-table">
+                            <thead>
+                                <tr><th>Date</th><th>Admin's Name</th><th>Action</th><th>Alteration</th><th>Details</th></tr>
+                            </thead>
+                            <tbody id="history-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="history-footer">
+                        <p id="status-line" role="status" aria-live="polite">Loading...</p>
+                        <button type="button" id="more-button" hidden>Load more</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script type="module" src="./js/shell.js"></script>
     <script type="module" src="./js/path-page.js"></script>
+    <script type="module" src="./js/edit-history-page.js"></script>
 </body>
 </html>

@@ -21,10 +21,6 @@ body {
     margin: 0;
     padding: 0;
     max-width: 1024px;
-    background-image: url(../assets/common/doodle-light-1.svg);
-    background-position: top;
-    background-repeat: no-repeat;
-    background-size: 100%;
 }
 
 #logo {
@@ -102,4 +98,28 @@ button {
 :focus-visible {
     outline: 3px solid #0071e3;
     outline-offset: 2px;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+#credentials-card [hidden] {
+    display: none;
+}
+
+#credentials-card .field-error {
+    margin: 0;
+    padding: 0 4px;
+    font-size: 14px;
+    color: #ff7b7b;
+}
+
+#credentials-card input[aria-invalid="true"] {
+    border: 2px solid #ff7b7b;
 }

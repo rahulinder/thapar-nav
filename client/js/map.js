@@ -1,32 +1,6 @@
-import { CAMPUS_CENTER, DEFAULT_MAP_STYLE, DEFAULT_ZOOM, FOCUS_ZOOM, STORAGE_KEYS } from "./config.js";
+import { CAMPUS_CENTER, DEFAULT_ZOOM, FOCUS_ZOOM } from "./config.js";
 import { categoryColor, categoryLabel } from "./categories.js";
 import { el } from "./dom.js";
-import { storage } from "./storage.js";
-
-const BASE_LAYERS = {
-    satellite: {
-        switchLabel: "Satellite",
-        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        options: {
-            maxZoom: 19,
-            maxNativeZoom: 18,
-            attribution: "&copy; Esri, Maxar, Earthstar Geographics"
-        }
-    },
-    street: {
-        switchLabel: "Map",
-        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        options: {
-            maxZoom: 19,
-            attribution: "&copy; OpenStreetMap"
-        }
-    }
-};
-
-function savedMapStyle() {
-    const value = storage.get(STORAGE_KEYS.mapStyle);
-    return typeof value === "string" && Object.hasOwn(BASE_LAYERS, value) ? value : DEFAULT_MAP_STYLE;
-}
 
 function stubMap() {
     return {
@@ -41,7 +15,8 @@ function stubMap() {
         drawRoute() {},
         clearRoute() {},
         locate: () => Promise.resolve(null),
-        invalidate() {}
+        invalidate() {},
+        toggleSatellite: () => false
     };
 }
 
@@ -59,50 +34,57 @@ export function createCampusMap(container, { onSelect }) {
 
     map.attributionControl.setPosition("topright");
     map.attributionControl.setPrefix(false);
-
-    let mapStyle = savedMapStyle();
-    let baseLayer = null;
-    let styleButton = null;
-
-    function applyMapStyle(style) {
-        mapStyle = style;
-        if (baseLayer) {
-            baseLayer.remove();
+    const credit = map.attributionControl.getContainer();
+    credit.classList.add("compact");
+    let creditTimer = null;
+    credit.addEventListener("click", () => {
+        const open = credit.classList.toggle("is-open");
+        window.clearTimeout(creditTimer);
+        if (open) {
+            creditTimer = window.setTimeout(() => credit.classList.remove("is-open"), 5000);
         }
-        const definition = BASE_LAYERS[style];
-        baseLayer = L.tileLayer(definition.url, definition.options).addTo(map);
-        baseLayer.bringToBack();
-        map.getContainer().dataset.mapStyle = style;
-        if (styleButton) {
-            const other = style === "satellite" ? "street" : "satellite";
-            styleButton.textContent = BASE_LAYERS[other].switchLabel;
-            styleButton.setAttribute(
-                "aria-label",
-                other === "satellite" ? "Switch to satellite view" : "Switch to street map"
-            );
+    });
+
+    const streetLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap"
+    });
+    const satelliteLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 19,
+        maxNativeZoom: 18,
+        attribution: "Imagery &copy; Esri"
+    }).addTo(map);
+    let satelliteOn = true;
+
+    function toggleSatellite() {
+        satelliteOn = !satelliteOn;
+        if (satelliteOn) {
+            streetLayer.remove();
+            satelliteLayer.addTo(map);
+        } else {
+            satelliteLayer.remove();
+            streetLayer.addTo(map);
         }
+        return satelliteOn;
     }
-
-    const styleControl = L.control({ position: "topleft" });
-    styleControl.onAdd = () => {
-        styleButton = L.DomUtil.create("button", "map-style-toggle");
-        styleButton.type = "button";
-        L.DomEvent.disableClickPropagation(styleButton);
-        styleButton.addEventListener("click", () => {
-            const next = mapStyle === "satellite" ? "street" : "satellite";
-            applyMapStyle(next);
-            storage.set(STORAGE_KEYS.mapStyle, next);
-        });
-        return styleButton;
-    };
-    styleControl.addTo(map);
-    applyMapStyle(mapStyle);
 
     const markers = new Map();
     let userMarker = null;
     let accuracyCircle = null;
     let selectedId = null;
     let routeLine = null;
+    let onlyIds = null;
+
+    function applyVisibility() {
+        for (const { marker, place } of markers.values()) {
+            const show = !onlyIds || onlyIds.has(place.id);
+            if (show && !map.hasLayer(marker)) {
+                marker.addTo(map);
+            } else if (!show) {
+                marker.remove();
+            }
+        }
+    }
 
     function pinIcon(place, selected) {
         const pin = el("span", { class: selected ? "map-pin is-selected" : "map-pin" });
@@ -141,6 +123,7 @@ export function createCampusMap(container, { onSelect }) {
             marker.addTo(map);
             markers.set(place.id, { marker, place });
         }
+        applyVisibility();
     }
 
     function refreshIcons() {
@@ -244,7 +227,7 @@ export function createCampusMap(container, { onSelect }) {
         });
     }
 
-    function drawRoute(coordinates, { fit = true } = {}) {
+    function drawRoute(coordinates, { fit = true, only = null, zoomTo = null } = {}) {
         clearRoute();
         const latlngs = coordinates.map((c) => [c.lat, c.lng]);
         routeLine = L.polyline(latlngs, {
@@ -254,7 +237,13 @@ export function createCampusMap(container, { onSelect }) {
             lineJoin: "round",
             interactive: false
         }).addTo(map);
-        if (fit && latlngs.length > 1) {
+        if (only) {
+            onlyIds = new Set(only);
+            applyVisibility();
+        }
+        if (zoomTo) {
+            map.setView([zoomTo.lat, zoomTo.lng], FOCUS_ZOOM);
+        } else if (fit && latlngs.length > 1) {
             map.fitBounds(routeLine.getBounds(), { padding: [40, 40], maxZoom: FOCUS_ZOOM });
         }
     }
@@ -263,6 +252,10 @@ export function createCampusMap(container, { onSelect }) {
         if (routeLine) {
             routeLine.remove();
             routeLine = null;
+        }
+        if (onlyIds) {
+            onlyIds = null;
+            applyVisibility();
         }
     }
 
@@ -286,6 +279,7 @@ export function createCampusMap(container, { onSelect }) {
         watch,
         locate,
         invalidate,
+        toggleSatellite,
         drawRoute,
         clearRoute,
         panTo(point, zoom = DEFAULT_ZOOM) {

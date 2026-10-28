@@ -65,7 +65,7 @@
 .icons-img {
     min-width: 32px; /* Forces exact size */
     max-width: 32px;
-    margin-left: 18px; /* Centers the 36px icon inside the 72px collapsed button */
+    margin-left: 20px;
 }
 
 .side-bar-expanded-text {

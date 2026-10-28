@@ -14,14 +14,25 @@
 </head>
 <body>
     <img id="logo" src="./assets/common/ti-logo-with-black-name.svg" alt="Thapar-Nav">
-    <form id="credentials-card">
+    <form id="credentials-card" novalidate>
         <span>
             <label for="visitor-name" class="visually-hidden">Your name</label>
-            <input id="visitor-name" type="text" placeholder="Name (optional)" maxlength="40" autocomplete="given-name">
+            <input id="visitor-name" type="text" placeholder="Name" maxlength="40" autocomplete="name" aria-describedby="name-error">
+            <p class="field-error" id="name-error" role="alert" hidden></p>
+        </span>
+        <span id="contact-field">
+            <label for="visitor-contact" class="visually-hidden">Phone number or email</label>
+            <input id="visitor-contact" type="text" placeholder="Phone or email" maxlength="80" autocomplete="tel" aria-describedby="contact-error">
+            <p class="field-error" id="contact-error" role="alert" hidden></p>
+        </span>
+        <span id="roll-field" hidden>
+            <label for="visitor-roll" class="visually-hidden">Roll number</label>
+            <input id="visitor-roll" type="text" placeholder="Roll number" maxlength="15" autocomplete="off" autocapitalize="characters" aria-describedby="roll-error">
+            <p class="field-error" id="roll-error" role="alert" hidden></p>
         </span>
         <span>
             <button type="submit">Continue</button>
-            <button type="button" id="skip-btn">Skip</button>
+            <button type="button" id="skip-btn">Continue as guest</button>
         </span>
     </form>
 </body>

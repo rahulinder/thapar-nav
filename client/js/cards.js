@@ -34,6 +34,10 @@ export function createPlaceCard(place, { onOpen, onRoute, showCategory = false }
 
     const card = el("div", { class: "cards place-card", dataset: { category: place.category, placeId: place.id } }, children);
     card.style.setProperty("--accent", categoryColor(place.category));
+    if (place.photoUrl) {
+        card.classList.add("has-photo");
+        card.style.setProperty("--photo", `url("${place.photoUrl}")`);
+    }
     return card;
 }
 

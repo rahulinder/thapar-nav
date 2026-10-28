@@ -14,7 +14,7 @@ const getRoute = asyncHandler(async (req, res) => {
         from,
         to,
         role: q.role || null,
-        accessible: q.accessible === "true"
+        mode: q.mode === "driving" ? "driving" : "walking"
     });
     res.json({ route });
 });

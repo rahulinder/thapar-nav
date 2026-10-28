@@ -65,8 +65,8 @@ Place fields: `name`, `category`, `description`, `aliases`, `lat`, `lng`, `visib
 | `PUT /api/paths/junctions/:id` | admin | `{ lat, lng, label }`, also recalculates connected walkway lengths |
 | `DELETE /api/paths/junctions/:id` | admin | Also deletes its walkways and unlinks places |
 | `GET /api/paths/walkways` | everyone | Walkway list |
-| `POST /api/paths/walkways` | admin | `{ from, to, name, bidirectional, wheelchairAccessible }`, length is calculated by the server |
-| `PUT /api/paths/walkways/:id` | admin | Change `name`, `bidirectional`, `wheelchairAccessible` |
+| `POST /api/paths/walkways` | admin | `{ from, to, name, bidirectional, drivable, driveBidirectional }`, length is calculated by the server |
+| `PUT /api/paths/walkways/:id` | admin | Change `name`, `bidirectional`, `drivable`, `driveBidirectional` |
 | `DELETE /api/paths/walkways/:id` | admin | Delete a walkway |
 
 ## Route finding (B4)
@@ -75,7 +75,7 @@ Place fields: `name`, `category`, `description`, `aliases`, `lat`, `lng`, `visib
 
 Start: `fromPlace=<place id>` or `fromLat=..&fromLng=..`
 Destination: `toPlace=<place id>` or `toLat=..&toLng=..`
-Optional: `role=student` (destination and start places must be visible to the role), `accessible=true` (avoid walkways marked not wheelchair accessible).
+Optional: `role=student` (destination and start places must be visible to the role), `mode=walking|driving` (default walking; driving uses only drivable walkways).
 
 Returns:
 
@@ -83,7 +83,7 @@ Returns:
 { "route": {
     "distanceMeters": 412.3,
     "durationSeconds": 317,
-    "accessible": false,
+    "mode": "walking",
     "from": { "type": "place", "name": "...", "lat": 0, "lng": 0 },
     "to":   { "type": "point", "lat": 0, "lng": 0 },
     "coordinates": [ { "lat": 30.3547, "lng": 76.3621 }, ... ]
@@ -109,3 +109,16 @@ Body: `{ "mode": "skip" | "update", "places": [ { name, category, lat, lng, ... 
 - `skip` (default) leaves a place alone when its name already exists. `update` overwrites it with the new values.
 - Each place is checked on its own. One bad row does not stop the others.
 - Response: `{ created, updated, skipped, failed, results: [ { index, status, id?, error? } ] }`
+
+
+## Place photo
+
+- `GET /api/places/:id/photo` returns the image. Public for active places, admin only for hidden ones. 404 when the place has no photo.
+- `PUT /api/places/:id/photo` (admin) with the image as the raw request body and `Content-Type` image/jpeg, image/png or image/webp. Maximum 450 KB. Returns `{ place }` with `hasPhoto: true` and a new `photoVersion`.
+- `DELETE /api/places/:id/photo` (admin) removes it.
+
+## Edit history
+
+- `GET /api/audit` (admin) lists who added, changed or deleted a place, junction or walkway, newest first. Query: `entity` (place, junction, walkway), `action` (created, updated, deleted), `q` (searches the item name and the admin name), `page`, `limit` (1 to 100, default 25).
+- Returns `{ count, total, page, entries }`. Each entry has `adminName`, `action`, `entity`, `entityId`, `entityName`, `summary`, `changes` (a list of `{ field, from, to }` for changes) and `createdAt`.
+- Entries are written automatically by the places and paths endpoints (including photo changes and CSV import). There is no endpoint to edit or delete entries.

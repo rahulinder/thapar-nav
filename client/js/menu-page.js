@@ -11,5 +11,5 @@ document.getElementById("menu-close").addEventListener("click", () => {
 document.getElementById("logout-button").addEventListener("click", () => {
     clearRole();
     clearVisitorName();
-    window.location.href = "login.html";
+    window.location.href = "user-option.html?next=index.html";
 });

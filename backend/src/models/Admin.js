@@ -27,6 +27,10 @@ const adminSchema = new mongoose.Schema(
             enum: ADMIN_ROLES,
             default: "admin"
         },
+        displayName: { type: String, trim: true, maxlength: 60, default: "" },
+        email: { type: String, trim: true, lowercase: true, maxlength: 120, default: "" },
+        phone: { type: String, trim: true, maxlength: 20, default: "" },
+        avatar: { type: String, maxlength: 8000, default: "" },
         isActive: {
             type: Boolean,
             default: true

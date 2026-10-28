@@ -18,7 +18,8 @@ function createPathsRouter({ writeLimiter }) {
     const walkwayExtras = [
         body("name").optional().isString().withMessage("Name must be text").bail().trim().isLength({ max: 80 }).withMessage("Name is too long"),
         body("bidirectional").optional().isBoolean({ strict: true }).withMessage("bidirectional must be true or false"),
-        body("wheelchairAccessible").optional().isBoolean({ strict: true }).withMessage("wheelchairAccessible must be true or false")
+        body("drivable").optional().isBoolean({ strict: true }).withMessage("drivable must be true or false"),
+        body("driveBidirectional").optional().isBoolean({ strict: true }).withMessage("driveBidirectional must be true or false")
     ];
 
     const createWalkwayRules = [

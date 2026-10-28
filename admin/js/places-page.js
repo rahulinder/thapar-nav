@@ -2,7 +2,8 @@ import { hasValidSession } from "./auth.js";
 
 import { el, clear, toast } from "./dom.js";
 import { CATEGORIES, ROLES, CAMPUS_BOUNDS } from "./config.js";
-import { listPlaces, createPlace, updatePlace, deletePlace } from "./api.js";
+import { listPlaces, createPlace, updatePlace, deletePlace, uploadPlacePhoto, deletePlacePhoto, placePhotoUrl } from "./api.js";
+import { preparePhoto } from "./photo.js";
 
 const body = document.getElementById("places-body");
 const statusLine = document.getElementById("status-line");
@@ -96,16 +97,80 @@ function buildRow(place, startEditing) {
     const active = checkbox("Active", place.isActive);
     const description = textInput(place.description || "", "Description", { maxlength: "1000" });
     const aliases = textInput((place.aliases || []).join(", "), "Other names", { maxlength: "400" });
+    const hasAliases = (place.aliases || []).length > 0;
+    const aliasToggle = checkbox("Add other names", hasAliases);
+    const aliasLabel = el("label", { hidden: !hasAliases }, ["Other names (comma separated)", aliases]);
+    aliasToggle.input.addEventListener("change", () => {
+        aliasLabel.hidden = !aliasToggle.input.checked;
+        if (aliasToggle.input.checked && !aliases.disabled) aliases.focus();
+    });
     const hours = textInput(place.openingHours || "", "Opening hours", { maxlength: "120" });
     const entrance = checkbox("Entrance", Boolean(place.isEntrance));
     const errorBox = el("p", { class: "row-error", role: "alert", hidden: true });
 
-    const fields = [nameInput, category, lat, lng, description, aliases, hours, ...roleBoxes.map((r) => r.input), active.input, entrance.input];
+    const photo = { blob: null, remove: false, objectUrl: null };
+    const photoInput = el("input", { class: "photo-input", type: "file", accept: "image/jpeg,image/png,image/webp", "aria-label": "Photo of the location", disabled: true });
+    const photoPreview = el("img", { class: "photo-preview", alt: "Photo of " + (place.name || "the location"), hidden: true });
+    const photoRemove = el("button", { type: "button", class: "plain small-btn", text: "Remove photo", disabled: true, hidden: true });
+    const photoNote = el("p", { class: "photo-note", text: "JPEG, PNG or WebP. Big photos are shrunk automatically." });
+    const hadPhoto = Boolean(place.hasPhoto);
+
+    function releasePreview() {
+        if (photo.objectUrl) {
+            URL.revokeObjectURL(photo.objectUrl);
+            photo.objectUrl = null;
+        }
+    }
+
+    function refreshPhoto() {
+        let source = "";
+        if (photo.blob) source = photo.objectUrl;
+        else if (hadPhoto && !photo.remove) source = placePhotoUrl(place);
+        photoPreview.hidden = !source;
+        if (source) photoPreview.src = source;
+        else photoPreview.removeAttribute("src");
+        photoRemove.hidden = !source;
+    }
+
+    photoInput.addEventListener("change", async () => {
+        const file = photoInput.files && photoInput.files[0];
+        if (!file) return;
+        photoNote.textContent = "Preparing photo...";
+        try {
+            const blob = await preparePhoto(file);
+            releasePreview();
+            photo.blob = blob;
+            photo.remove = false;
+            photo.objectUrl = URL.createObjectURL(blob);
+            photoNote.textContent = "Photo ready (" + Math.round(blob.size / 1024) + " KB). It uploads when you click Save.";
+            errorBox.hidden = true;
+        } catch (error) {
+            photoInput.value = "";
+            photoNote.textContent = "JPEG, PNG or WebP. Big photos are shrunk automatically.";
+            showError(error.message);
+        }
+        refreshPhoto();
+    });
+
+    photoRemove.addEventListener("click", () => {
+        releasePreview();
+        photo.blob = null;
+        photo.remove = hadPhoto;
+        photoInput.value = "";
+        photoNote.textContent = hadPhoto ? "The photo will be removed when you click Save." : "JPEG, PNG or WebP. Big photos are shrunk automatically.";
+        refreshPhoto();
+    });
+
+    const fields = [nameInput, category, lat, lng, description, aliasToggle.input, aliases, hours, photoInput, photoRemove, ...roleBoxes.map((r) => r.input), active.input, entrance.input];
 
     const actions = el("div", { class: "actions" });
     const detailCell = el("td", { colspan: "7" });
+    const nameCell = el("div", { class: "name-cell" }, [
+        place.hasPhoto ? el("img", { class: "name-thumb", alt: "", loading: "lazy", src: placePhotoUrl(place) }) : null,
+        nameInput
+    ]);
     const main = el("tr", { class: isNew ? "row-new" : "", dataset: isNew ? {} : { placeName: place.name } }, [
-        el("td", {}, [nameInput]),
+        el("td", {}, [nameCell]),
         el("td", {}, [category]),
         el("td", {}, [lat]),
         el("td", {}, [lng]),
@@ -117,9 +182,14 @@ function buildRow(place, startEditing) {
     detailCell.append(
         el("div", { class: "detail-grid" }, [
             el("label", {}, ["Description", description]),
-            el("label", {}, ["Other names (comma separated)", aliases]),
+            aliasToggle.wrap,
+            aliasLabel,
             el("label", {}, ["Opening hours", hours]),
             entrance.wrap
+        ]),
+        el("div", { class: "photo-field" }, [
+            el("span", { class: "photo-label", text: "Photo of the location" }),
+            el("div", { class: "photo-controls" }, [photoPreview, el("div", { class: "photo-actions" }, [photoInput, photoRemove, photoNote])])
         ]),
         errorBox
     );
@@ -146,7 +216,12 @@ function buildRow(place, startEditing) {
         clear(actions);
         if (on) actions.append(saveButton, cancelButton);
         else actions.append(editButton, deleteButton);
-        if (on) nameInput.focus();
+        if (on) {
+            refreshPhoto();
+            nameInput.focus();
+        } else {
+            releasePreview();
+        }
     }
 
     function collect() {
@@ -164,7 +239,7 @@ function buildRow(place, startEditing) {
         }
         const visibleTo = roleBoxes.filter((r) => r.input.checked).map((r) => r.key);
         if (visibleTo.length === 0) return { error: "Pick at least one group that can see this place." };
-        const aliasList = aliases.value.split(",").map((a) => a.trim()).filter(Boolean);
+        const aliasList = !aliasToggle.input.checked ? [] : aliases.value.split(",").map((a) => a.trim()).filter(Boolean);
         if (aliasList.length > 10) return { error: "Use at most 10 other names." };
         if (aliasList.some((a) => a.length > 80)) return { error: "Each other name must be 80 characters or fewer." };
         return {
@@ -195,7 +270,22 @@ function buildRow(place, startEditing) {
         saveButton.textContent = "Saving...";
         try {
             const response = isNew ? await createPlace(result.data) : await updatePlace(place._id, result.data);
-            const saved = response.place;
+            let saved = response.place;
+            let photoProblem = "";
+            if (photo.blob) {
+                try {
+                    saved = (await uploadPlacePhoto(saved._id, photo.blob)).place;
+                } catch (error) {
+                    photoProblem = error.message;
+                }
+            } else if (photo.remove && saved.hasPhoto) {
+                try {
+                    saved = (await deletePlacePhoto(saved._id)).place;
+                } catch (error) {
+                    photoProblem = error.message;
+                }
+            }
+            releasePreview();
             if (isNew) {
                 state.places.push(saved);
             } else {
@@ -205,7 +295,8 @@ function buildRow(place, startEditing) {
             state.editing = null;
             sortPlaces();
             render();
-            toast(isNew ? "Place added." : "Place saved.");
+            if (photoProblem) toast((isNew ? "Place added" : "Place saved") + ", but the photo failed: " + photoProblem, "error");
+            else toast(isNew ? "Place added." : "Place saved.");
         } catch (error) {
             saveButton.disabled = false;
             cancelButton.disabled = false;

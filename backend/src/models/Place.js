@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const { ROLES, PLACE_CATEGORIES, CAMPUS_BOUNDS } = require("../config/constants");
 
+const photoSchema = new mongoose.Schema(
+    {
+        data: { type: Buffer, required: true },
+        contentType: { type: String, required: true }
+    },
+    { _id: false }
+);
+
 const placeSchema = new mongoose.Schema(
     {
         name: {
@@ -75,6 +83,19 @@ const placeSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true
+        },
+        hasPhoto: {
+            type: Boolean,
+            default: false
+        },
+        photoVersion: {
+            type: Number,
+            default: 0
+        },
+        photo: {
+            type: photoSchema,
+            select: false,
+            default: undefined
         }
     },
     { timestamps: true }
@@ -93,6 +114,7 @@ placeSchema.pre("validate", function setNameKey(next) {
 placeSchema.set("toJSON", {
     transform(doc, ret) {
         delete ret.nameKey;
+        delete ret.photo;
         delete ret.__v;
         return ret;
     }
