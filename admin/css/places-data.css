@@ -381,3 +381,28 @@ dialog p {
     font-size: 12px;
     color: #4b5563;
 }
+
+.view-text {
+    display: block;
+    padding: 0 8px;
+    font-size: 14px;
+    line-height: 1.35;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+.view-text[hidden],
+.cell-input[hidden],
+.cell-select[hidden] {
+    display: none;
+}
+.name-cell .view-text {
+    flex: 1;
+    min-width: 0;
+}
+#places-table td:first-child {
+    min-width: 200px;
+}
+#places-table td:nth-child(2) {
+    min-width: 130px;
+}

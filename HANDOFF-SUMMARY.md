@@ -220,3 +220,6 @@ E1, E2, E3 and E4 passed real-browser Playwright tests (45 + 34 + 32 checks) aga
 
 ## Edit history column names
 - Table headers are now Date, Admin's Name, Action, Alteration, Details (were When, Who, Action, What, Details) in admin/edit-history.html and in the history card in admin/path-editor.html. Text change only; checked by reading both files, not re-run in a browser.
+
+## Square place photo
+- .panel-photo in client/css/base.css is now 1:1 (aspect-ratio 1 / 1, up to 360px wide, centred, cover-cropped).

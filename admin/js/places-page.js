@@ -165,13 +165,16 @@ function buildRow(place, startEditing) {
 
     const actions = el("div", { class: "actions" });
     const detailCell = el("td", { colspan: "7" });
+    const nameView = el("span", { class: "view-text", text: place.name || "" });
+    const categoryView = el("span", { class: "view-text", text: CATEGORIES[place.category] || place.category || "" });
     const nameCell = el("div", { class: "name-cell" }, [
         place.hasPhoto ? el("img", { class: "name-thumb", alt: "", loading: "lazy", src: placePhotoUrl(place) }) : null,
-        nameInput
+        nameInput,
+        nameView
     ]);
     const main = el("tr", { class: isNew ? "row-new" : "", dataset: isNew ? {} : { placeName: place.name } }, [
         el("td", {}, [nameCell]),
-        el("td", {}, [category]),
+        el("td", {}, [category, categoryView]),
         el("td", {}, [lat]),
         el("td", {}, [lng]),
         el("td", {}, [el("div", { class: "roles" }, roleBoxes.map((r) => r.wrap))]),
@@ -210,6 +213,10 @@ function buildRow(place, startEditing) {
 
     function setEditing(on) {
         for (const field of fields) field.disabled = !on;
+        nameInput.hidden = !on;
+        category.hidden = !on;
+        nameView.hidden = on;
+        categoryView.hidden = on;
         detail.hidden = !on;
         main.classList.toggle("row-editing", on && !isNew);
         errorBox.hidden = true;
