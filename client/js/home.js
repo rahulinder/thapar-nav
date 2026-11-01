@@ -143,17 +143,6 @@ function main() {
         setTimeout(hideHints, 8000);
     }
 
-    const expandButton = byId("expand-button");
-    expandButton.addEventListener("click", () => {
-        const expanded = byId("home-map").classList.toggle("is-expanded");
-        document.body.classList.toggle("map-expanded", expanded);
-        expandButton.classList.toggle("is-active", expanded);
-        expandButton.setAttribute("aria-pressed", String(expanded));
-        expandButton.setAttribute("aria-label", expanded ? "Shrink map" : "Expand map");
-        expandButton.title = expanded ? "Shrink map" : "Expand map";
-        byId("home-map").scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
-    });
-
     function renderRoleNote() {
         const note = byId("role-note");
         clear(note);

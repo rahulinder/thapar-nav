@@ -331,29 +331,6 @@ body.page-home #logo-and-search {
     top: 120px;
 }
 
-#expand-button {
-    position: absolute;
-    top: 172px;
-    left: 16px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    color: #4b5563;
-    background: #ffffff;
-    border: 0;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(13, 17, 23, 0.3);
-    cursor: pointer;
-}
-
-#expand-button.is-active {
-    color: #0071e3;
-}
-
 body.map-expanded #logo-and-search,
 body:has(#route-banner:not([hidden])) #logo-and-search {
     display: none;
@@ -437,11 +414,6 @@ body:has(#route-banner:not([hidden])) #logo-and-search {
     border-radius: 999px;
     transform: translateY(-50%);
     pointer-events: none;
-}
-
-#home-map #expand-button {
-    top: auto;
-    left: auto;
 }
 
 #route-banner {

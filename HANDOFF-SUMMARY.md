@@ -284,3 +284,6 @@ E1, E2, E3 and E4 passed real-browser Playwright tests (45 + 34 + 32 checks) aga
 
 ## Name and alias aligned at the bottom
 - On place cards the name and the alias now sit on the same text baseline (client/css/base.css): .location-name uses align-items flex-end, and the alias gets bottom padding of 0.24 x (name size - alias size) so its baseline matches the name's. --name-size is 24px (original card) or 26px (experimental card). Built on dcbc3cf.
+
+## Expand/shrink map button removed
+- The expand/shrink map button is removed from the client home map: the button in client/index.html, its click handler in client/js/home.js, and its #expand-button styles in client/css/index.css. Map tools are now Plan a route, Map or satellite, My location. The route view still takes the full screen. Built on 1a999b8.
