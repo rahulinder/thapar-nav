@@ -1,6 +1,6 @@
 export const API_PREFIX = "/api";
 export const LOCAL_API_PORT = 5000;
-export const PRODUCTION_API_URL = "https://developing-thapar-nav.onrender.com";
+export const PRODUCTION_API_URL = "https://thapar-nav.onrender.com";
 
 const PRIVATE_HOST = /^(localhost|127\.0\.0\.1|10(\.\d{1,3}){3}|192\.168(\.\d{1,3}){2}|172\.(1[6-9]|2\d|3[01])(\.\d{1,3}){2})$/;
 
