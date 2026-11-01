@@ -92,6 +92,14 @@ const placeSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        gallery: {
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: "PlaceImage" }],
+            default: [],
+            validate: {
+                validator: (list) => list.length <= 8,
+                message: "A place can have at most 8 gallery images"
+            }
+        },
         photo: {
             type: photoSchema,
             select: false,

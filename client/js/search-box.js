@@ -3,9 +3,10 @@ import { createSearch } from "./search.js";
 import { SUGGESTION_LIMIT } from "./config.js";
 import { categoryLabel, categoryColor } from "./categories.js";
 
-export function createSearchBox({ form, input, list, onSelect }) {
+export function createSearchBox({ form, input, list, onSelect, recent = null, onClearRecent = null }) {
     let search = createSearch([]);
     let results = [];
+    let known = [];
     let active = -1;
     let blurTimer = null;
 
@@ -49,11 +50,62 @@ export function createSearchBox({ form, input, list, onSelect }) {
         onSelect(place);
     }
 
+    function showRecent() {
+        const ids = recent ? recent() : [];
+        const items = ids.map((id) => known.find((place) => place.id === id)).filter(Boolean);
+        if (items.length === 0) {
+            close();
+            return;
+        }
+        results = items;
+        list.append(
+            el("li", { class: "suggestion-head", role: "presentation" }, [
+                el("span", { text: "Recent searches" }),
+                onClearRecent
+                    ? el("button", {
+                          type: "button",
+                          class: "suggestion-clear",
+                          text: "Clear",
+                          onmousedown: (event) => event.preventDefault(),
+                          onclick: () => {
+                            onClearRecent();
+                            close();
+                          }
+                      })
+                    : null
+            ])
+        );
+        items.forEach((place, index) => list.append(optionItem(place, index)));
+        list.hidden = false;
+        active = -1;
+        input.setAttribute("aria-expanded", "true");
+        input.removeAttribute("aria-activedescendant");
+    }
+
+    function optionItem(place, index) {
+        return el(
+            "li",
+            {
+                id: optionId(index),
+                class: "suggestion",
+                role: "option",
+                "aria-selected": "false",
+                onmousedown: (event) => event.preventDefault(),
+                onclick: () => choose(place)
+            },
+            [
+                el("span", { class: "suggestion-dot", style: `background:${categoryColor(place.category)}`, "aria-hidden": "true" }),
+                el("span", { class: "suggestion-name", text: place.name }),
+                el("span", { class: "suggestion-category", text: categoryLabel(place.category) })
+            ]
+        );
+    }
+
     function open() {
         clear(list);
         const text = input.value.trim();
         if (!text) {
-            close();
+            showRecent();
             return;
         }
         results = search.query(text, SUGGESTION_LIMIT);
@@ -62,30 +114,7 @@ export function createSearchBox({ form, input, list, onSelect }) {
                 el("li", { class: "suggestion-empty", role: "presentation", text: "No places match your search" })
             );
         } else {
-            results.forEach((place, index) => {
-                list.append(
-                    el(
-                        "li",
-                        {
-                            id: optionId(index),
-                            class: "suggestion",
-                            role: "option",
-                            "aria-selected": "false",
-                            onmousedown: (event) => event.preventDefault(),
-                            onclick: () => choose(place)
-                        },
-                        [
-                            el("span", {
-                                class: "suggestion-dot",
-                                style: `background:${categoryColor(place.category)}`,
-                                "aria-hidden": "true"
-                            }),
-                            el("span", { class: "suggestion-name", text: place.name }),
-                            el("span", { class: "suggestion-category", text: categoryLabel(place.category) })
-                        ]
-                    )
-                );
-            });
+            results.forEach((place, index) => list.append(optionItem(place, index)));
         }
         list.hidden = false;
         active = -1;
@@ -96,9 +125,7 @@ export function createSearchBox({ form, input, list, onSelect }) {
     input.addEventListener("input", open);
     input.addEventListener("focus", () => {
         clearTimeout(blurTimer);
-        if (input.value.trim()) {
-            open();
-        }
+        open();
     });
     input.addEventListener("blur", () => {
         blurTimer = setTimeout(close, 150);
@@ -123,7 +150,7 @@ export function createSearchBox({ form, input, list, onSelect }) {
 
     form.addEventListener("submit", (event) => {
         event.preventDefault();
-        if (results.length === 0) {
+        if (!input.value.trim() || results.length === 0) {
             open();
             return;
         }
@@ -133,6 +160,7 @@ export function createSearchBox({ form, input, list, onSelect }) {
     return {
         setPlaces(places) {
             search = createSearch(places);
+            known = places;
             if (document.activeElement === input && input.value.trim()) {
                 open();
             }

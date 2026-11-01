@@ -99,7 +99,10 @@ export function normalizePlace(raw) {
         visibleTo: Array.isArray(raw.visibleTo) ? raw.visibleTo : [],
         photoUrl: raw.hasPhoto
             ? `${API_BASE_URL}${API_PREFIX}/places/${encodeURIComponent(id)}/photo?v=${Number(raw.photoVersion) || 0}`
-            : ""
+            : "",
+        gallery: Array.isArray(raw.gallery)
+            ? raw.gallery.map((imageId) => `${API_BASE_URL}${API_PREFIX}/places/${encodeURIComponent(id)}/gallery/${encodeURIComponent(imageId)}`)
+            : []
     };
 }
 

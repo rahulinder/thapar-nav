@@ -165,3 +165,29 @@
     width: 32px;
     height: 32px;
 }
+
+#support-overlay {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#support-overlay .support-group {
+    padding: 12px 0 4px;
+    border-top: 1px solid #c7d2e0;
+}
+
+#support-overlay .support-heading {
+    margin: 0 0 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #0d1117;
+}
+
+#support-overlay .support-group p {
+    font-size: 18px;
+}
+
+#support-overlay .support-group p a {
+    display: inline-block;
+    padding: 2px 0;
+}

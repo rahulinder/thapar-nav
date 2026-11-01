@@ -140,6 +140,18 @@ export function placePhotoUrl(place) {
     return API_BASE_URL + API_PREFIX + "/places/" + encodeURIComponent(place._id) + "/photo?v=" + (place.photoVersion || 0);
 }
 
+export function uploadGalleryImage(id, blob) {
+    return call("/places/" + encodeURIComponent(id) + "/gallery", { method: "POST", body: blob });
+}
+
+export function deleteGalleryImage(id, imageId) {
+    return call("/places/" + encodeURIComponent(id) + "/gallery/" + encodeURIComponent(imageId), { method: "DELETE" });
+}
+
+export function galleryImageUrl(placeId, imageId) {
+    return API_BASE_URL + API_PREFIX + "/places/" + encodeURIComponent(placeId) + "/gallery/" + encodeURIComponent(imageId);
+}
+
 export function listEditHistory({ entity, action, q, page, limit }) {
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
     if (entity) params.set("entity", entity);

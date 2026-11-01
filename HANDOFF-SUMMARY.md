@@ -221,5 +221,66 @@ E1, E2, E3 and E4 passed real-browser Playwright tests (45 + 34 + 32 checks) aga
 ## Edit history column names
 - Table headers are now Date, Admin's Name, Action, Alteration, Details (were When, Who, Action, What, Details) in admin/edit-history.html and in the history card in admin/path-editor.html. Text change only; checked by reading both files, not re-run in a browser.
 
-## Square place photo
-- .panel-photo in client/css/base.css is now 1:1 (aspect-ratio 1 / 1, up to 360px wide, centred, cover-cropped).
+## Location gallery
+- New PlaceImage collection; Place.gallery is an ordered id list (max 8). Endpoints: GET/POST /api/places/:id/gallery, DELETE /api/places/:id/gallery/:imageId (see API-REFERENCE.md).
+- Admin Places row: "Location gallery" section sits below "Photo of the location"; adds and removals are staged and applied on Save.
+- Client place panel: a thumbnail strip under the main photo; tapping a thumbnail shows it in the main (1:1) photo.
+- This patch also includes the 1:1 panel photo (base.css) and the Places table wrapping fix (places-data.css, places-page.js), in case they were not yet pushed.
+
+## Client home: map background plus draggable places sheet
+- The map (#home-map) is fixed full-screen behind everything. The "Places on campus" sheet (#places-sheet) overlays it and holds the greeting (#role-note), My places and all category sections; it scrolls inside.
+- Sheet has three heights (small, half, full): drag the handle or tap it to cycle (client/js/sheet.js, new). It hides while a route is planned or running and when the map is expanded.
+- Files: client/index.html, client/css/index.css (appended block), client/js/sheet.js. No backend change.
+
+## Recent searches in the search dropdown
+- Recent searches no longer show in the home sheet. They appear in a dropdown under the top search bar only while the empty search box is focused, with a Clear button; hidden otherwise. Saved places stay in the sheet.
+- Files: client/js/search-box.js (recent/onClearRecent options, used only by the top search bar), client/js/home.js, client/css/base.css (appended styles).
+
+## Client top bar: 80px
+- #logo-and-search is now 80px tall (was about 88px): padding 8px 16px, logo 35px wide (64px tall), #search-bar 64px tall (48px pill). Sticky offset of #hostel-category in places.css changed from 88px to 80px.
+- Files: client/css/base.css, client/css/places.css.
+
+## Client: nav bar removed, hamburger menu, emergency numbers
+- The bottom #nav-bar is removed from index.html and places.html. A hamburger link (#menu-toggle, href menu.html) sits right of the search bar in the top bar and opens the side drawer (menu-drawer.js intercepts links to menu.html). Home and Support remain inside the drawer.
+- Support overlay (built in client/js/menu-drawer.js) now has two groups: Technical Support (email nav.support@thapar.edu, contact 9876543210, unchanged) and Emergency (Ambulance 9182736405 / 9282726258, Security 9392048204 / 9587340524, each a tel: link).
+- Bottom padding of the home sheet body and places list reduced from 120px to 32px since the bar is gone.
+- Files: client/index.html, client/places.html, client/js/menu-drawer.js, client/css/base.css, index.css, places.css, drawer.css.
+
+## Client: pin popups, route loading styles (repo gap fixed)
+- Tapping a pin now opens a small popup (name, category, Details and Directions buttons) instead of the full panel (client/js/map.js buildPopup, createCampusMap gets onRoute; home.js already passed it).
+- Added the missing CSS in client/css/index.css: route spinner and skeleton shown while a route is being found, #map-message box, .pin-popup styles. Also the map now fills the full screen height when expanded or routing (the old calc(100vh - 32px) left a 32px strip).
+- Files: client/js/map.js, client/css/index.css. Built on 2e4f99c.
+
+## Font: Inter, bolder text
+- Inter is now the project font (client and admin). Every page loads Inter 400-800 from Google Fonts with a system fallback; every font-family uses Inter (client/css/style.css untouched).
+- Text is one step bolder: pages that set the font also set body, input, button, select and textarea to weight 500, and every explicit weight moved up one step (400/424/450 to 500, 500 to 600, 600 to 700, 700 to 800).
+- Files: all client and admin HTML pages with stylesheets, and the CSS files that set a font or weight. Built on 67104b1.
+
+## Admin: fixed sidebar, top bar hides on scroll
+- Layout (not position: sticky): on every shell page the body is a full-height flex column (admin/css/side-bar.css). Only the content next to the sidebar scrolls (#dashboard-body > the non-sidebar child, overflow-y auto); the sidebar column never moves.
+- Top bar (admin/css/top-bar.css + watchScroll in admin/js/shell.js): scrolling down hides it (its container collapses to 0 height, the sidebar and content grow to fill), scrolling up or returning near the top shows it again. It only hides when the page is tall enough to scroll at least 160px, and ignores scroll events for 400ms after toggling to avoid flicker.
+- Files: admin/css/side-bar.css, admin/css/top-bar.css, admin/js/shell.js. Built on 250f350.
+
+## Card spacing and concentric corners
+- Place cards (client/css/base.css, .cards.place-card): one --card-inset (16px) now drives the left, right and bottom gap of the details block and the top-left badge; the card radius is 48px and the Start Route button radius is card radius minus inset (32px, equal to half its 64px height), so the gap to the card corner is the same all the way round. Card shadow is now symmetric (0 4px 12px) instead of offset 4px 4px.
+- Built on fcc0602.
+
+## base.css regression repaired
+- The repo's client/css/base.css had reverted to an older version (Google Sans Flex, 72px logo and auto-height top bar, no gallery strip, no 1:1 panel photo, no recent-search dropdown or hamburger styles, old alias wrapping). It is rebuilt from the last good version plus the current experimental card style (.cards.place-card block, --card-inset, --card-radius).
+- Restored: 1:1 .panel-photo, .panel-gallery styles, 80px top bar and 35px logo, Inter, alias nowrap and shrink styles, .suggestion-head/.suggestion-clear, #menu-toggle.
+- client/index.html also gets the "Explore Campus" sheet title (it was not applied in the repo). All other files were checked and are intact. Built on 78f7c52.
+
+## Dashboard quick-card gap
+- .quick-cards (admin/css/dashboard.css) now has grid-auto-rows: 160px and align-content: start, so the row gap stays 16px like the column gap. Before, the grid rows stretched to fill the scrolling content area (since the shell layout change), leaving a large vertical gap. Built on 9322857.
+
+## Card style variants (smaller cards)
+- Client place cards are 280px square (were 320px) in both variants (client/css/base.css .cards width/height).
+- experimental/client/css/base.css: current photo-first card (name over the photo, white pill Start Route, 16px inset, concentric 48px/32px corners).
+- original/client/css/base.css: the earlier card with the white details box over the photo (the whole "EXPERIMENT" block removed).
+- Copy ONE of the two base.css files over client/css/base.css. Built on c9872a9.
+
+## Smaller alias
+- The alias in brackets on place cards is now 14px at full size (was 17-18px) and can shrink down to 9px (was 10px) to stay beside the name: client/js/cards.js (ALIAS_MAX 14, ALIAS_MIN 9) and client/css/base.css. Built on a65b04c.
+
+## Name and alias aligned at the bottom
+- On place cards the name and the alias now sit on the same text baseline (client/css/base.css): .location-name uses align-items flex-end, and the alias gets bottom padding of 0.24 x (name size - alias size) so its baseline matches the name's. --name-size is 24px (original card) or 26px (experimental card). Built on dcbc3cf.

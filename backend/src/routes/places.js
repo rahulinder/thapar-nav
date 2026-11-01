@@ -59,6 +59,17 @@ function createPlacesRouter({ writeLimiter }) {
         controller.setPhoto
     );
     router.delete("/:id/photo", writeLimiter, requireAdmin, validate([idRule]), controller.removePhoto);
+    const imageRule = param("imageId").isMongoId().withMessage("Invalid image id");
+    router.get("/:id/gallery/:imageId", optionalAdmin, validate([idRule, imageRule]), controller.getGalleryImage);
+    router.post(
+        "/:id/gallery",
+        writeLimiter,
+        requireAdmin,
+        validate([idRule]),
+        express.raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "450kb" }),
+        controller.addGalleryImage
+    );
+    router.delete("/:id/gallery/:imageId", writeLimiter, requireAdmin, validate([idRule, imageRule]), controller.removeGalleryImage);
     router.get("/:id", optionalAdmin, validate([idRule]), controller.getPlace);
     const bulkRules = [
         body("mode").optional().isIn(["skip", "update"]).withMessage("mode must be skip or update"),

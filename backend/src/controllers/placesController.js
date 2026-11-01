@@ -1,4 +1,4 @@
-const { Place, Junction } = require("../models");
+const { Place, Junction, PlaceImage } = require("../models");
 const { HttpError } = require("../utils/httpError");
 const { asyncHandler } = require("../utils/asyncHandler");
 const { searchTokens } = require("../utils/text");
@@ -111,6 +111,7 @@ const deletePlace = asyncHandler(async (req, res) => {
         throw new HttpError(404, "Place not found.");
     }
     await place.deleteOne();
+    await PlaceImage.deleteMany({ place: place._id });
     await record(req, { action: "deleted", entity: "place", entityId: place._id, entityName: place.name, summary: "Deleted a " + place.category + " place" });
     res.json({ message: "Place deleted.", id: req.params.id });
 });
@@ -165,6 +166,65 @@ const removePhoto = asyncHandler(async (req, res) => {
     place.photoVersion = (place.photoVersion || 0) + 1;
     await place.save();
     await record(req, { action: "updated", entity: "place", entityId: place._id, entityName: place.name, summary: "Removed photo", changes: [{ field: "photo", from: "photo", to: "" }] });
+    res.json({ place });
+});
+
+const MAX_GALLERY = 8;
+
+const getGalleryImage = asyncHandler(async (req, res) => {
+    const place = await Place.findById(req.params.id).select("isActive gallery").lean();
+    const listed = place && (place.gallery || []).some((id) => String(id) === req.params.imageId);
+    if (!place || !listed || (!place.isActive && !req.admin)) {
+        throw new HttpError(404, "Image not found.");
+    }
+    const image = await PlaceImage.findById(req.params.imageId).lean();
+    if (!image) {
+        throw new HttpError(404, "Image not found.");
+    }
+    const data = Buffer.isBuffer(image.data) ? image.data : Buffer.from(image.data.buffer || image.data);
+    res.set("Content-Type", image.contentType);
+    res.set("Content-Length", String(data.length));
+    res.set("X-Content-Type-Options", "nosniff");
+    res.set("Cache-Control", place.isActive ? "public, max-age=31536000, immutable" : "private, no-store");
+    res.send(data);
+});
+
+const addGalleryImage = asyncHandler(async (req, res) => {
+    const bytes = req.body;
+    if (!Buffer.isBuffer(bytes) || bytes.length === 0) {
+        throw new HttpError(400, "Send the image as a JPEG, PNG or WebP file.");
+    }
+    const match = PHOTO_SIGNATURES.find((entry) => entry.test(bytes));
+    if (!match) {
+        throw new HttpError(400, "That file is not a JPEG, PNG or WebP image.");
+    }
+    const place = await Place.findById(req.params.id);
+    if (!place) {
+        throw new HttpError(404, "Place not found.");
+    }
+    if ((place.gallery || []).length >= MAX_GALLERY) {
+        throw new HttpError(400, "A place can have at most " + MAX_GALLERY + " gallery images.");
+    }
+    const image = await PlaceImage.create({ place: place._id, data: bytes, contentType: match.type });
+    place.gallery.push(image._id);
+    await place.save();
+    await record(req, { action: "updated", entity: "place", entityId: place._id, entityName: place.name, summary: "Added a gallery image", changes: [{ field: "gallery", from: "", to: "new image" }] });
+    res.status(201).json({ place, imageId: image._id });
+});
+
+const removeGalleryImage = asyncHandler(async (req, res) => {
+    const place = await Place.findById(req.params.id);
+    if (!place) {
+        throw new HttpError(404, "Place not found.");
+    }
+    const before = place.gallery.length;
+    place.gallery = place.gallery.filter((id) => String(id) !== req.params.imageId);
+    if (place.gallery.length === before) {
+        throw new HttpError(404, "Image not found.");
+    }
+    await place.save();
+    await PlaceImage.deleteOne({ _id: req.params.imageId, place: place._id });
+    await record(req, { action: "updated", entity: "place", entityId: place._id, entityName: place.name, summary: "Removed a gallery image", changes: [{ field: "gallery", from: "image", to: "" }] });
     res.json({ place });
 });
 
@@ -227,4 +287,4 @@ const bulkImport = asyncHandler(async (req, res) => {
     res.json({ ...counts, results });
 });
 
-module.exports = { listPlaces, getPlace, createPlace, updatePlace, deletePlace, bulkImport, getPhoto, setPhoto, removePhoto };
+module.exports = { listPlaces, getPlace, createPlace, updatePlace, deletePlace, bulkImport, getPhoto, setPhoto, removePhoto, getGalleryImage, addGalleryImage, removeGalleryImage };

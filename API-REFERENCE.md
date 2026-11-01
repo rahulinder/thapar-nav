@@ -111,6 +111,13 @@ Body: `{ "mode": "skip" | "update", "places": [ { name, category, lat, lng, ... 
 - Response: `{ created, updated, skipped, failed, results: [ { index, status, id?, error? } ] }`
 
 
+## Place gallery
+
+- `GET /api/places/:id/gallery/:imageId` returns one gallery image. Public for active places, admin only for hidden ones.
+- `POST /api/places/:id/gallery` (admin) with the image as the raw body (image/jpeg, image/png or image/webp, max 450 KB). Returns 201 with `{ place, imageId }`. A place holds at most 8 gallery images.
+- `DELETE /api/places/:id/gallery/:imageId` (admin) removes one image.
+- Place objects carry `gallery`, a list of image ids in display order.
+
 ## Place photo
 
 - `GET /api/places/:id/photo` returns the image. Public for active places, admin only for hidden ones. 404 when the place has no photo.

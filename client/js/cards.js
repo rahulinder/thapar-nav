@@ -2,10 +2,42 @@ import { el } from "./dom.js";
 import { categoryLabel, categoryColor } from "./categories.js";
 import { HOME_CARDS_PER_SECTION } from "./config.js";
 
+const ALIAS_MAX = 14;
+const ALIAS_MIN = 9;
+
+function fitAlias(name) {
+    const title = name.querySelector(".name-text");
+    const alias = name.querySelector(".name-in-brackets");
+    if (!title || !alias || name.clientWidth === 0) return;
+    const style = getComputedStyle(name);
+    const available = name.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const gap = parseFloat(style.columnGap) || 0;
+    const margins = parseFloat(getComputedStyle(alias).marginLeft) + parseFloat(getComputedStyle(alias).marginRight);
+    title.style.whiteSpace = "nowrap";
+    const titleWidth = Math.min(title.scrollWidth, available);
+    title.style.whiteSpace = "";
+    alias.style.maxWidth = "";
+    let size = ALIAS_MAX;
+    alias.style.fontSize = size + "px";
+    while (size > ALIAS_MIN && titleWidth + gap + margins + alias.scrollWidth > available) {
+        size -= 1;
+        alias.style.fontSize = size + "px";
+    }
+    if (titleWidth + gap + margins + alias.scrollWidth > available) {
+        alias.style.maxWidth = Math.max(60, available - Math.min(titleWidth, available * 0.6) - gap - margins) + "px";
+    }
+}
+
+function watchAlias(name) {
+    if (typeof ResizeObserver !== "function") return;
+    new ResizeObserver(() => fitAlias(name)).observe(name);
+}
+
 export function createPlaceCard(place, { onOpen, onRoute, showCategory = false }) {
     const name = el("h1", { class: "location-name" }, [el("span", { class: "name-text", text: place.name })]);
     if (place.altName) {
         name.append(el("p", { class: "name-in-brackets", text: `(${place.altName})` }));
+        watchAlias(name);
     }
 
     const children = [

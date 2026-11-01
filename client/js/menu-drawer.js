@@ -66,21 +66,45 @@ supportClose.append(supportCloseIcon);
 const supportTitle = document.createElement("h2");
 supportTitle.id = "support-title";
 supportTitle.textContent = "Support";
-const emailLine = document.createElement("p");
-const emailLabel = document.createElement("strong");
-emailLabel.textContent = "Email: ";
-const emailLink = document.createElement("a");
-emailLink.href = "mailto:nav.support@thapar.edu";
-emailLink.textContent = "nav.support@thapar.edu";
-emailLine.append(emailLabel, emailLink);
-const phoneLine = document.createElement("p");
-const phoneLabel = document.createElement("strong");
-phoneLabel.textContent = "Contact: ";
-const phoneLink = document.createElement("a");
-phoneLink.href = "tel:9876543210";
-phoneLink.textContent = "9876543210";
-phoneLine.append(phoneLabel, phoneLink);
-supportBox.append(supportClose, supportTitle, emailLine, phoneLine);
+function supportHeading(text) {
+    const node = document.createElement("h3");
+    node.className = "support-heading";
+    node.textContent = text;
+    return node;
+}
+
+function supportLine(label, values, kind) {
+    const line = document.createElement("p");
+    const strong = document.createElement("strong");
+    strong.textContent = label + " ";
+    line.append(strong);
+    values.forEach((value, index) => {
+        if (index > 0) line.append(document.createElement("br"));
+        const link = document.createElement("a");
+        link.href = (kind === "mail" ? "mailto:" : "tel:") + value;
+        link.textContent = value;
+        line.append(link);
+    });
+    return line;
+}
+
+const techSection = document.createElement("section");
+techSection.className = "support-group";
+techSection.append(
+    supportHeading("Technical Support"),
+    supportLine("Email:", ["nav.support@thapar.edu"], "mail"),
+    supportLine("Contact:", ["9876543210"], "tel")
+);
+
+const emergencySection = document.createElement("section");
+emergencySection.className = "support-group";
+emergencySection.append(
+    supportHeading("Emergency"),
+    supportLine("Ambulance:", ["9182736405", "9282726258"], "tel"),
+    supportLine("Security:", ["9392048204", "9587340524"], "tel")
+);
+
+supportBox.append(supportClose, supportTitle, techSection, emergencySection);
 document.body.append(supportBackdrop, supportBox);
 
 let supportOpener = null;

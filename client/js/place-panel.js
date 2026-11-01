@@ -70,6 +70,25 @@ export function initPlacePanel({ dialog, onShowOnMap = null }) {
             photo.addEventListener("error", () => photo.remove());
         }
 
+        let gallery = null;
+        if (place.gallery && place.gallery.length) {
+            gallery = el("div", { class: "panel-gallery", role: "list", "aria-label": `More photos of ${place.name}` });
+            place.gallery.forEach((url, index) => {
+                const image = el("img", { class: "panel-gallery-image", src: url, alt: `${place.name}, photo ${index + 1}`, loading: "lazy" });
+                const item = el("button", { type: "button", class: "panel-gallery-item", role: "listitem", "aria-label": `View photo ${index + 1} larger` }, [image]);
+                image.addEventListener("error", () => item.remove());
+                item.addEventListener("click", () => {
+                    if (photo) {
+                        photo.src = url;
+                    } else {
+                        photo = el("img", { class: "panel-photo", src: url, alt: `Photo of ${place.name}` });
+                        gallery.before(photo);
+                    }
+                });
+                gallery.append(item);
+            });
+        }
+
         const parts = [
             el("div", { class: "panel-handle", "aria-hidden": "true" }),
             el(
@@ -78,6 +97,7 @@ export function initPlacePanel({ dialog, onShowOnMap = null }) {
                 [el("img", { src: "./assets/client-interface/balck-cross.svg", alt: "", width: "24", height: "24" })]
             ),
             photo,
+            gallery,
             badge,
             el("h2", { id: "place-panel-title", class: "panel-title", tabindex: "-1", autofocus: true, text: place.name }),
             place.altName ? el("p", { class: "panel-alt", text: place.altName }) : null,

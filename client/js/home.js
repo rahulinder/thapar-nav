@@ -81,7 +81,9 @@ function main() {
             addRecent(place.id);
             map.focusPlace(place);
             panel.open(place);
-        }
+        },
+        recent: getRecentIds,
+        onClearRecent: clearRecent
     });
 
     const myPlaces = byId("my-places");
@@ -112,21 +114,10 @@ function main() {
         clear(myPlaces);
         const byPlaceId = new Map(places.map((place) => [place.id, place]));
         const saved = getFavouriteIds().map((id) => byPlaceId.get(id)).filter(Boolean);
-        const savedIds = new Set(saved.map((place) => place.id));
-        const recent = getRecentIds().filter((id) => !savedIds.has(id)).map((id) => byPlaceId.get(id)).filter(Boolean);
         if (saved.length) {
             myPlaces.append(chipGroup("Saved places", saved.map(placeChip)));
         }
-        if (recent.length) {
-            myPlaces.append(
-                chipGroup(
-                    "Recent searches",
-                    recent.map(placeChip),
-                    el("button", { type: "button", class: "chip-clear", text: "Clear", onclick: clearRecent })
-                )
-            );
-        }
-        myPlaces.hidden = saved.length === 0 && recent.length === 0;
+        myPlaces.hidden = saved.length === 0;
     }
 
     document.addEventListener("saved-changed", renderMyPlaces);

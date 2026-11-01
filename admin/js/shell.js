@@ -71,4 +71,36 @@ async function start() {
     document.dispatchEvent(new CustomEvent("shell-ready"));
 }
 
+function watchScroll() {
+    const body = document.body;
+    const last = new WeakMap();
+    let lockUntil = 0;
+    document.addEventListener(
+        "scroll",
+        (event) => {
+            const area = event.target;
+            if (!(area instanceof Element) || area.closest("#sidebar-container") || !area.closest("#dashboard-body")) return;
+            const top = area.scrollTop;
+            if (performance.now() < lockUntil) {
+                last.set(area, top);
+                return;
+            }
+            const previous = last.has(area) ? last.get(area) : top;
+            const delta = top - previous;
+            const hidden = body.classList.contains("top-bar-hidden");
+            const roomToHide = area.scrollHeight - area.clientHeight > 160;
+            if (!hidden && delta > 6 && top > 80 && roomToHide) {
+                body.classList.add("top-bar-hidden");
+                lockUntil = performance.now() + 400;
+            } else if (hidden && (delta < -6 || top < 20)) {
+                body.classList.remove("top-bar-hidden");
+                lockUntil = performance.now() + 400;
+            }
+            last.set(area, top);
+        },
+        true
+    );
+}
+
+watchScroll();
 start();

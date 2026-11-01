@@ -86,3 +86,38 @@
 .side-bar-icons.active {
     background-color: #0071E3;
 }
+
+html:has(#dashboard-body) {
+    height: 100%;
+}
+
+body:has(#dashboard-body):not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+#dashboard-body {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+#sidebar-container {
+    flex: none;
+    align-self: stretch;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+#sidebar-container::-webkit-scrollbar {
+    display: none;
+}
+
+#dashboard-body > :not(#sidebar-container) {
+    align-self: stretch;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

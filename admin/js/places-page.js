@@ -2,7 +2,7 @@ import { hasValidSession } from "./auth.js";
 
 import { el, clear, toast } from "./dom.js";
 import { CATEGORIES, ROLES, CAMPUS_BOUNDS } from "./config.js";
-import { listPlaces, createPlace, updatePlace, deletePlace, uploadPlacePhoto, deletePlacePhoto, placePhotoUrl } from "./api.js";
+import { listPlaces, createPlace, updatePlace, deletePlace, uploadPlacePhoto, deletePlacePhoto, placePhotoUrl, uploadGalleryImage, deleteGalleryImage, galleryImageUrl } from "./api.js";
 import { preparePhoto } from "./photo.js";
 
 const body = document.getElementById("places-body");
@@ -161,6 +161,83 @@ function buildRow(place, startEditing) {
         refreshPhoto();
     });
 
+    const MAX_GALLERY = 8;
+    const gallery = { removed: new Set(), added: [] };
+    const savedGallery = Array.isArray(place.gallery) ? place.gallery : [];
+    const galleryGrid = el("div", { class: "gallery-grid" });
+    const galleryInput = el("input", { class: "photo-input", type: "file", multiple: true, accept: "image/jpeg,image/png,image/webp", "aria-label": "Add gallery images", disabled: true });
+    const galleryNote = el("p", { class: "photo-note", text: "Up to " + MAX_GALLERY + " images. JPEG, PNG or WebP. They upload when you click Save." });
+    const galleryTools = [];
+    let editingNow = false;
+
+    function galleryCount() {
+        return savedGallery.filter((id) => !gallery.removed.has(id)).length + gallery.added.length;
+    }
+
+    function releaseGallery() {
+        gallery.added.forEach((item) => URL.revokeObjectURL(item.objectUrl));
+    }
+
+    function galleryTile(src, label, onRemove) {
+        const remove = el("button", { type: "button", class: "gallery-remove", text: "\u00d7", "aria-label": "Remove " + label, title: "Remove", disabled: !editingNow });
+        remove.addEventListener("click", onRemove);
+        galleryTools.push(remove);
+        return el("div", { class: "gallery-tile" }, [el("img", { src, alt: label, loading: "lazy" }), remove]);
+    }
+
+    function refreshGallery() {
+        galleryTools.length = 0;
+        clear(galleryGrid);
+        savedGallery.forEach((id, index) => {
+            if (gallery.removed.has(id)) return;
+            galleryGrid.append(galleryTile(galleryImageUrl(place._id, id), "gallery image " + (index + 1), () => {
+                gallery.removed.add(id);
+                refreshGallery();
+            }));
+        });
+        gallery.added.forEach((item, index) => {
+            galleryGrid.append(galleryTile(item.objectUrl, "new image " + (index + 1), () => {
+                URL.revokeObjectURL(item.objectUrl);
+                gallery.added.splice(gallery.added.indexOf(item), 1);
+                refreshGallery();
+            }));
+        });
+        syncGalleryInput();
+        galleryGrid.hidden = galleryGrid.children.length === 0;
+    }
+
+    galleryInput.addEventListener("change", async () => {
+        const files = Array.from(galleryInput.files || []);
+        galleryInput.value = "";
+        if (!files.length) return;
+        galleryNote.textContent = "Preparing images...";
+        let skipped = 0;
+        let failure = "";
+        for (const file of files) {
+            if (galleryCount() >= MAX_GALLERY) {
+                skipped += 1;
+                continue;
+            }
+            try {
+                const blob = await preparePhoto(file);
+                gallery.added.push({ blob, objectUrl: URL.createObjectURL(blob) });
+            } catch (error) {
+                failure = error.message;
+            }
+        }
+        galleryNote.textContent = skipped ? "Only " + MAX_GALLERY + " images fit; " + skipped + " skipped." : "Up to " + MAX_GALLERY + " images. JPEG, PNG or WebP. They upload when you click Save.";
+        if (failure) showError(failure);
+        else errorBox.hidden = true;
+        refreshGallery();
+    });
+
+    function syncGalleryInput() {
+        galleryInput.disabled = !editingNow || galleryCount() >= MAX_GALLERY;
+        galleryTools.forEach((button) => {
+            button.disabled = !editingNow;
+        });
+    }
+
     const fields = [nameInput, category, lat, lng, description, aliasToggle.input, aliases, hours, photoInput, photoRemove, ...roleBoxes.map((r) => r.input), active.input, entrance.input];
 
     const actions = el("div", { class: "actions" });
@@ -194,8 +271,14 @@ function buildRow(place, startEditing) {
             el("span", { class: "photo-label", text: "Photo of the location" }),
             el("div", { class: "photo-controls" }, [photoPreview, el("div", { class: "photo-actions" }, [photoInput, photoRemove, photoNote])])
         ]),
+        el("div", { class: "photo-field gallery-field" }, [
+            el("span", { class: "photo-label", text: "Location gallery" }),
+            galleryGrid,
+            el("div", { class: "photo-actions" }, [galleryInput, galleryNote])
+        ]),
         errorBox
     );
+    refreshGallery();
 
     let saveButton = null;
     let cancelButton = null;
@@ -213,6 +296,8 @@ function buildRow(place, startEditing) {
 
     function setEditing(on) {
         for (const field of fields) field.disabled = !on;
+        editingNow = on;
+        syncGalleryInput();
         nameInput.hidden = !on;
         category.hidden = !on;
         nameView.hidden = on;
@@ -228,6 +313,7 @@ function buildRow(place, startEditing) {
             nameInput.focus();
         } else {
             releasePreview();
+            releaseGallery();
         }
     }
 
@@ -292,7 +378,22 @@ function buildRow(place, startEditing) {
                     photoProblem = error.message;
                 }
             }
+            for (const imageId of gallery.removed) {
+                try {
+                    saved = (await deleteGalleryImage(saved._id, imageId)).place;
+                } catch (error) {
+                    photoProblem = photoProblem || error.message;
+                }
+            }
+            for (const item of gallery.added) {
+                try {
+                    saved = (await uploadGalleryImage(saved._id, item.blob)).place;
+                } catch (error) {
+                    photoProblem = photoProblem || error.message;
+                }
+            }
             releasePreview();
+            releaseGallery();
             if (isNew) {
                 state.places.push(saved);
             } else {
@@ -302,7 +403,7 @@ function buildRow(place, startEditing) {
             state.editing = null;
             sortPlaces();
             render();
-            if (photoProblem) toast((isNew ? "Place added" : "Place saved") + ", but the photo failed: " + photoProblem, "error");
+            if (photoProblem) toast((isNew ? "Place added" : "Place saved") + ", but the photos failed: " + photoProblem, "error");
             else toast(isNew ? "Place added." : "Place saved.");
         } catch (error) {
             saveButton.disabled = false;

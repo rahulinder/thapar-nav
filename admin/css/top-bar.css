@@ -63,3 +63,19 @@
   align-items: start;
   row-gap: 8px;
 }
+#top-bar-container {
+    flex: none;
+    max-height: 100px;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+}
+
+body.top-bar-hidden #top-bar-container {
+    max-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #top-bar-container {
+        transition: none;
+    }
+}
