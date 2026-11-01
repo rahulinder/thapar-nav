@@ -6,7 +6,7 @@
 3. Make sure `CLIENT_ORIGINS` in `backend/.env` contains the address you opened, for example `http://127.0.0.1:5500`. Restart the backend after changing it.
 
 ## Log in
-Use the username and password you made with `npm run create-admin`. The old numeric Admin ID is gone because the server uses usernames. You stay logged in until you close the tab or the login expires (`JWT_EXPIRES_IN`).
+Use the username and password you made with `npm run create-admin`. Every admin also gets an Admin ID like `TN-0001`, shown in Account Settings and under your name in the top bar; you can type either the username or the Admin ID to log in. Existing admins receive an ID the next time they log in, or all at once with `npm run assign-admin-ids`. You stay logged in until you close the tab or the login expires (`JWT_EXPIRES_IN`).
 
 ## Manage places
 Campus Data, then any card, opens the Places page. "All Places" shows everything, including inactive places.

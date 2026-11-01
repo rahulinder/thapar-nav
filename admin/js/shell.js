@@ -28,7 +28,10 @@ function fillAdminName() {
     const picture = document.getElementById("top-bar-profile-image");
     if (name) name.textContent = admin.displayName || admin.username;
     if (picture && admin.avatar) picture.src = admin.avatar;
-    if (role) role.textContent = admin.role === "superadmin" ? "Super admin" : "Admin";
+    if (role) {
+        const label = admin.role === "superadmin" ? "Super admin" : "Admin";
+        role.textContent = admin.adminId ? label + " \u00b7 " + admin.adminId : label;
+    }
 }
 
 async function refreshAdmin() {

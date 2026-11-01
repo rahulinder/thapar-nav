@@ -24,7 +24,7 @@ Admin-only calls need the header `Authorization: Bearer <token>` (get the token 
 
 ## Login (B5)
 
-`POST /api/auth/login` with `{ "username": "...", "password": "..." }` returns `{ token, expiresIn, admin }`. At most 10 attempts per 15 minutes per address.
+`POST /api/auth/login` with `{ "username": "...", "password": "..." }` (the `username` field also accepts the Admin ID, for example `TN-0001`) returns `{ token, expiresIn, admin }`. At most 10 attempts per 15 minutes per address.
 
 `GET /api/auth/me` (admin) returns `{ admin }`.
 

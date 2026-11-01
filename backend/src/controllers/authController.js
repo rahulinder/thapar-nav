@@ -8,7 +8,8 @@ const DUMMY_HASH = bcrypt.hashSync("not-a-real-password", 12);
 
 const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
-    const admin = await Admin.findOne({ username: String(username).toLowerCase() }).select("+passwordHash");
+    const who = String(username).trim();
+    const admin = await Admin.findOne({ $or: [{ username: who.toLowerCase() }, { adminId: who.toUpperCase() }] }).select("+passwordHash");
 
     const valid = admin
         ? await admin.verifyPassword(password)

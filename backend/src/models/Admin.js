@@ -4,6 +4,8 @@ const { ADMIN_ROLES } = require("../config/constants");
 
 const BCRYPT_ROUNDS = 12;
 const MIN_PASSWORD_LENGTH = 10;
+const ADMIN_ID_PREFIX = "TN-";
+const ADMIN_ID_PATTERN = /^TN-\d+$/;
 
 const adminSchema = new mongoose.Schema(
     {
@@ -15,7 +17,19 @@ const adminSchema = new mongoose.Schema(
             unique: true,
             minlength: [3, "Username must be at least 3 characters"],
             maxlength: [40, "Username must be at most 40 characters"],
-            match: [/^[a-z0-9._-]+$/, "Username may contain only letters, numbers, dot, dash and underscore"]
+            match: [/^[a-z0-9._-]+$/, "Username may contain only letters, numbers, dot, dash and underscore"],
+            validate: {
+                validator: (value) => !/^tn-\d+$/.test(value),
+                message: "That username looks like an Admin ID. Choose another."
+            }
+        },
+        adminId: {
+            type: String,
+            unique: true,
+            sparse: true,
+            uppercase: true,
+            trim: true,
+            match: [ADMIN_ID_PATTERN, "Admin ID must look like TN-0001"]
         },
         passwordHash: {
             type: String,
@@ -42,6 +56,27 @@ const adminSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+adminSchema.statics.nextAdminId = async function nextAdminId() {
+    const last = await this.findOne({ adminId: ADMIN_ID_PATTERN })
+        .collation({ locale: "en", numericOrdering: true })
+        .sort({ adminId: -1 })
+        .select("adminId")
+        .lean();
+    const number = last ? parseInt(last.adminId.slice(ADMIN_ID_PREFIX.length), 10) + 1 : 1;
+    return ADMIN_ID_PREFIX + String(number).padStart(4, "0");
+};
+
+adminSchema.pre("validate", async function assignAdminId(next) {
+    try {
+        if (!this.adminId) {
+            this.adminId = await this.constructor.nextAdminId();
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 adminSchema.statics.hashPassword = async function hashPassword(plainPassword) {
     if (typeof plainPassword !== "string" || plainPassword.length < MIN_PASSWORD_LENGTH) {

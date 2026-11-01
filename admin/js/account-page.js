@@ -32,6 +32,7 @@ function remember(updated) {
 
 function render() {
     if (!admin) return;
+    document.getElementById("value-admin-id").textContent = admin.adminId || "Assigned at next login";
     document.getElementById("value-username").textContent = admin.username;
     photo.src = admin.avatar || DEFAULT_PHOTO;
     document.querySelectorAll(".editable").forEach((row) => {

@@ -57,7 +57,8 @@ The same pair of junctions can only be joined once (`from` plus `to` is unique).
 
 | Field | Type | Rules |
 |---|---|---|
-| username | text | required, unique, stored lowercase, letters, numbers, dot, dash, underscore |
+| username | text | required, unique, stored lowercase, letters, numbers, dot, dash, underscore; cannot look like an Admin ID |
+| adminId | text | unique, set automatically as TN-0001, TN-0002, ... when the admin is created or next saved |
 | passwordHash | text | the scrambled password, never the real one; hidden from normal queries |
 | role | text | `admin` or `superadmin` |
 | isActive | true or false | lets you disable an account |

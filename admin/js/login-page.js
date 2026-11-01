@@ -43,7 +43,7 @@ form.addEventListener("submit", async (event) => {
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
     if (!username || !password) {
-        showError("Enter your username and password.");
+        showError("Enter your username (or Admin ID) and password.");
         return;
     }
     setBusy(true, "Logging in...");

@@ -287,3 +287,9 @@ E1, E2, E3 and E4 passed real-browser Playwright tests (45 + 34 + 32 checks) aga
 
 ## Expand/shrink map button removed
 - The expand/shrink map button is removed from the client home map: the button in client/index.html, its click handler in client/js/home.js, and its #expand-button styles in client/css/index.css. Map tools are now Plan a route, Map or satellite, My location. The route view still takes the full screen. Built on 1a999b8.
+
+## Admin IDs
+- Every admin gets an Admin ID like TN-0001 (Admin.adminId, unique, set automatically in a pre-validate hook from the highest existing number plus one). Usernames that look like an Admin ID are rejected.
+- Login accepts the username or the Admin ID in the same field (authController.login). Existing admins get an ID on their next login (the login save assigns it) or all at once with `npm run assign-admin-ids` (backend/scripts/assign-admin-ids.js).
+- Admin panel: login label "Username or Admin ID"; Account Settings has an "Admin ID" card; the top bar shows "Admin · TN-0001" under the name.
+- Docs updated: ADMIN-GUIDE.md, API-REFERENCE.md, DATABASE-DESIGN.md. Tested without a database (ID generator, reserved usernames, existing backend tests 17 pass). Built on f24efa9.
